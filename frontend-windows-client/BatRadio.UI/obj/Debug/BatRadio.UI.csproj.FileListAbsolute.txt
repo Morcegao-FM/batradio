@@ -1,0 +1,14 @@
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\bin\Debug\BatRadio.UI.exe.config
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\bin\Debug\BatRadio.UI.exe
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\bin\Debug\BatRadio.UI.pdb
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\bin\Debug\Newtonsoft.Json.dll
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\bin\Debug\Newtonsoft.Json.xml
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.csprojAssemblyReference.cache
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.frmConfig.resources
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.Properties.Resources.resources
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.csproj.GenerateResource.cache
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.csproj.CoreCompileInputs.cache
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.csproj.CopyComplete
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.exe
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.pdb
+C:\git-guergolet\batradio\frontend-windows-client\BatRadio.UI\obj\Debug\BatRadio.UI.frmMain.resources

@@ -4,5 +4,12 @@
             "server": "localhost",
             "port": 6600,
             "password": "empty"        
+    },
+    "webserver": {
+        "port" : "9320",
+        "apiKey": ""      
+    },
+    "log": {
+        "minLevel": "debug"
     }
 }
