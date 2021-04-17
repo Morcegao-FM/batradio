@@ -73,12 +73,22 @@ namespace BatRadio.UI
 
         }
 
-        public List<StatusSong> GetPlayList()
+        public List<StatusSong> GetPlayList(bool updateDatabase = false)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("update", "true");
+            parameters.Add("update", updateDatabase?"true":"false");
             var status = PostString(PrepareUrl("playlist"), parameters);
             return JsonConvert.DeserializeObject<List<StatusSong>>(status);
+        }
+
+        public List<StatusSong> GetSongs(bool updateDatabase = false)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("update", updateDatabase ? "true" : "false");
+            parameters.Add("type", "file");
+            var status = GetString(PrepareUrl("list"), parameters);
+            return JsonConvert.DeserializeObject<List<StatusSong>>(status);
+
         }
     }
 }

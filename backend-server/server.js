@@ -160,7 +160,7 @@ async function getStatus() {
     currentStatus.next = currentPlaylist.find((t) => {
       return t.Pos == status.nextsong;
     });
-    logger.debug(`CURRENT SONG: ${currentStatus.currentSong.Title}`);
+    logger.debug(`CURRENT SONG: ${currentStatus.currentSong.Title}  VOLUME: ${currentStatus}`);
   });
   logger.info("END getStatus");
 }
@@ -228,7 +228,7 @@ app.post("/files", async (req, res) => {
 app.get("/list", async (req, res) => {
   updateFiles = req.header("update") == "true";
   type = req.header("type");
-  logger.debug("/list required list=", updateFiles, " type=", type);
+  logger.debug("/list required list update=", updateFiles, " type=", type);
   if (!checkAPIKey(req, res))
     return res.status("403").send({ message: "Invalid API Key " }).end();
   if (updateFiles)

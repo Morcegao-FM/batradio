@@ -31,6 +31,14 @@ namespace BatRadio.UI
 
         public StatusSong currentSong { get; set; }
         public StatusSong nextSong { get; set; }
+
+
+        public string GetDurationStatus()
+        {
+            return string.Format("{0} de {1} )  ",  RadioHelper.SecondsToString(elapsed), RadioHelper.SecondsToString(duration));
+        }
+
+
     }
 
 }
