@@ -8,6 +8,8 @@ namespace BatRadio.UI
 {
     class Status
     {
+        public int xfade { get; set; }
+
         public int repeat { get; set; }
         public int random { get; set; }
         public int single { get; set; }

@@ -17,6 +17,8 @@ namespace BatRadio.UI
         Status status = new Status();
         List<StatusSong> playlist = new List<StatusSong>();
         List<StatusSong> files = new List<StatusSong>();
+        private bool CheckChanging = false;
+        
         public frmMain()
         {
             InitializeComponent();
@@ -45,12 +47,15 @@ namespace BatRadio.UI
 
         private void ShowStatus()
         {
+            this.CheckChanging = true;
             labelNowPlaying.Text = string.Format("{0} - {1}   {2}", status.currentSong.Artist, status.currentSong.Title, status.GetDurationStatus());
             trackCurrentMusic.Maximum = (int)status.duration;
             trackCurrentMusic.Value = (int)status.elapsed;
             toggleIsPlaying.Checked = status.state == "play";
             toggleShuffle.Checked = status.random == 1;
             toggleRepeatPlaylist.Checked = status.repeat == 1;
+            toggleFadeIn.Checked = status.xfade > 0;
+            this.CheckChanging = false;
         }
         private void ShowMessage(string message)
         {
@@ -116,7 +121,9 @@ namespace BatRadio.UI
         {
             status = client.GetStatus();
             playlist = client.GetPlayList(true);
-            files = client.GetSongs(false);            
+            files = client.GetSongs(true);
+            timeUpdate_Tick(this, null);
+            tabMain.SelectTab(tabPlaying);
         }
         private void buttonConfigurationSave_Click(object sender, EventArgs e)
         {
@@ -124,6 +131,7 @@ namespace BatRadio.UI
             {
                 SaveConfiguration();
                 if (timerUpdate.Enabled == false) timerUpdate.Enabled = true;
+                tabMain.SelectTab(tabPlaying);
             }
             catch(Exception error)
             {
@@ -143,5 +151,38 @@ namespace BatRadio.UI
 
         #endregion
 
+
+        #region playback functions
+        private void toggleIsPlaying_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.CheckChanging)
+                return;           
+            
+            status = client.PlayOrPause();
+            ShowStatus();
+        }
+        #endregion
+
+        private void toggleFadeIn_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.CheckChanging) return;
+
+            status = client.FadeIn();
+            ShowStatus();
+        }
+
+        private void toggleRepeatPlaylist_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.CheckChanging) return;
+            status = client.Repeat();
+            ShowStatus();
+        }
+
+        private void toggleShuffle_CheckedChanged(object sender, EventArgs e)
+        {
+            if (this.CheckChanging) return;
+            status = client.Shuffle();
+            ShowStatus();
+        }
     }
 }

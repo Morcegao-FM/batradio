@@ -73,6 +73,19 @@ namespace BatRadio.UI
 
         }
 
+        public Status PlayOrPause()
+        {
+            var status = PostString(PrepareUrl("playorpause"));
+            return JsonConvert.DeserializeObject<Status>(status);
+        }
+
+        public Status FadeIn()
+        {
+            var status = PostString(PrepareUrl("fadein"));
+            return JsonConvert.DeserializeObject<Status>(status);
+        }
+
+
         public List<StatusSong> GetPlayList(bool updateDatabase = false)
         {
             var parameters = new Dictionary<string, string>();
@@ -88,6 +101,20 @@ namespace BatRadio.UI
             parameters.Add("type", "file");
             var status = GetString(PrepareUrl("list"), parameters);
             return JsonConvert.DeserializeObject<List<StatusSong>>(status);
+
+        }
+
+        internal Status Repeat()
+        {
+            var status = PostString(PrepareUrl("repeat"));
+            return JsonConvert.DeserializeObject<Status>(status);
+
+        }
+
+        internal Status Shuffle()
+        {
+            var status = PostString(PrepareUrl("shuffle"));
+            return JsonConvert.DeserializeObject<Status>(status);
 
         }
     }

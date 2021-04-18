@@ -28,10 +28,11 @@ var client = mpd.connect({
 
 var start = async function () {
   logger.trace("BEGIN main.start()");
+  
   await getFiles();
   await getPlaylist();
   await getStatus();
-  setInterval(promisedPing, 5000);
+  setInterval(Ping, 15000);
   logger.info("Inicializando o servidor WEB. PORT ", config.webserver.port);
   app.listen(config.webserver.port);
 
@@ -53,7 +54,6 @@ function promisedGetPlaylist() {
         logger.error("promisedGetPlaylist error " + err);
         return;
       }
-
       msg = msg.split("\nfile:");
       msg.forEach((item) => {
         currentPlaylist.push(mpd.parseKeyValueMessage("file: " + item));
@@ -66,19 +66,6 @@ function promisedGetPlaylist() {
   });
 }
 
-function promisedPing() {
-  logger.debug("BEGIN promisedPing");
-  if (busy) {
-    logger.debug("MPD Busy, ping canceled");
-    return;
-  }
-  return new Promise((resolve, reject) => {
-    client.sendCommand(mpd.cmd("ping", []), (err, msg) => {
-      logger.debug("PING SENT", msg, err);
-      resolve();
-    });
-  });
-}
 
 function promisedGetFiles(folder) {
   logger.debug(`BEGIN promisedGetFiles`);
@@ -103,21 +90,25 @@ function promisedGetFiles(folder) {
   });
 }
 
-function promisedStatus() {
-  logger.debug("BEGIN promisedStatus");
+
+function promisedCommand(command, params)
+{
+  logger.debug(`BEGIN promisedCommand command=[${command}]  params.length=[${params.length}]`);
+
   return new Promise((resolve, reject) => {
-    client.sendCommand(mpd.cmd("status", []), (err, msg) => {
-      logger.debug("MPDCOMMAND status sent");
+    client.sendCommand(mpd.cmd(command, params), (err, msg) => {
+      logger.debug(`MPDCOMMAND ${command} sent`);
       if (err) {
         reject(err);
-        logger.error(`MPDCOMMAND error ${err}`);
+        logger.debug(`MPDCOMMAND ${error} sent`);
         return;
       }
       resolve(mpd.parseKeyValueMessage(msg));
-      logger.debug(`MPDCOMMAND status processed ${currentStatus}`);
+      logger.debug(`MPDCOMMAND ${command} processed`);
     });
   });
 }
+
 
 async function getPlaylist() {
   logger.info("BEGIN getPlaylist");
@@ -150,10 +141,12 @@ async function getFiles(currentFolder) {
 async function getStatus() {
   logger.info("BEGIN getStatus");
   isBusy();
-  await promisedStatus().then((status) => {
+  await promisedCommand('status',[]).then((status) => {
     busy = false;
     var currentPos = status.song;
-    currentStatus = status;
+    if(!status.xfade) 
+        status.xfade = 0;
+    currentStatus = status;    
     currentStatus.currentSong = currentPlaylist.find((t) => {
       return t.Pos == currentPos;
     });
@@ -185,6 +178,98 @@ function checkAPIKey(req, res) {
   }
   return true;
 }
+
+
+
+async function Ping()
+{
+  await promisedCommand('ping',[]);
+}
+
+
+
+
+
+
+
+app.post('/playorpause', async (req,res) =>
+{
+  logger.debug('/playorpause required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  res.type("application/json");
+  logger.debug("/playorpause will be sent");
+  await getStatus();
+  var command = 'play';
+  if(currentStatus.state == 'play')
+    command = 'pause'  
+  isBusy();
+  await promisedCommand(command, []).then((data) => {busy = false;} )  
+  await getStatus();
+  res.status(200).send(currentStatus).end();
+});
+
+
+
+app.post('/repeat', async (req,res) =>
+{
+  console.log(currentStatus);
+  logger.debug('/repeat required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  res.type("application/json");
+  logger.debug("/repeat will be sent");
+  await getStatus();
+  var command = '1';
+  if(currentStatus.state == '1')
+    command = '0'  
+  isBusy();
+  await promisedCommand('repeat', [command]).then((data) => {busy = false;} )  
+  await getStatus();
+  res.status(200).send(currentStatus).end();
+});
+
+
+app.post('/shuffle', async (req,res) =>
+{
+  logger.debug('/shuffle required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  res.type("application/json");
+  logger.debug("/shuffle will be sent");
+  await getStatus();
+  var command = '1';
+  if(currentStatus.state == '1')
+    command = '0'  
+  isBusy();
+  await promisedCommand('random', [command]).then((data) => {busy = false;} )  
+  await getStatus();
+  res.status(200).send(currentStatus).end();
+});
+
+
+app.post('/fadein', async (req,res) =>
+{
+  logger.debug('/fadein required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  res.type("application/json");
+  logger.debug("/fadein will be sent");
+  await getStatus();
+  isBusy();  
+  await promisedCommand('crossfade', [currentStatus.xfade == '0'?1:0]).then((data) => {busy = false;} )  
+  await getStatus();
+  res.status(200).send(currentStatus).end();
+});
+
 
 app.get("/status", async (req, res) => {
   logger.debug("/status required");
@@ -261,3 +346,4 @@ app.get("/list", async (req, res) => {
       .send(currentFiles.filter((t) => t.playlist))
       .end();
 });
+

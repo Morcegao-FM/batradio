@@ -54,6 +54,8 @@
             this.buttonConfigurationCancel = new MetroFramework.Controls.MetroButton();
             this.labelRepeat = new MetroFramework.Controls.MetroLabel();
             this.toggleRepeatPlaylist = new MetroFramework.Controls.MetroToggle();
+            this.labelMusicFade = new MetroFramework.Controls.MetroLabel();
+            this.toggleFadeIn = new MetroFramework.Controls.MetroToggle();
             ((System.ComponentModel.ISupportInitialize)(this.styleManager)).BeginInit();
             this.panelMusicStatus.SuspendLayout();
             this.tabMain.SuspendLayout();
@@ -142,6 +144,8 @@
             // 
             // metroPanel2
             // 
+            this.metroPanel2.Controls.Add(this.labelMusicFade);
+            this.metroPanel2.Controls.Add(this.toggleFadeIn);
             this.metroPanel2.Controls.Add(this.labelRepeat);
             this.metroPanel2.Controls.Add(this.toggleRepeatPlaylist);
             this.metroPanel2.Controls.Add(this.labelShuffle);
@@ -178,6 +182,7 @@
             this.toggleShuffle.TabIndex = 4;
             this.toggleShuffle.Text = "Off";
             this.toggleShuffle.UseSelectable = true;
+            this.toggleShuffle.CheckedChanged += new System.EventHandler(this.toggleShuffle_CheckedChanged);
             // 
             // labelIsPlaying
             // 
@@ -197,6 +202,7 @@
             this.toggleIsPlaying.TabIndex = 2;
             this.toggleIsPlaying.Text = "Off";
             this.toggleIsPlaying.UseSelectable = true;
+            this.toggleIsPlaying.CheckedChanged += new System.EventHandler(this.toggleIsPlaying_CheckedChanged);
             // 
             // metroTabPage2
             // 
@@ -241,7 +247,7 @@
             this.buttonUpdateMusicDatabase.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.buttonUpdateMusicDatabase.FontSize = MetroFramework.MetroButtonSize.Tall;
             this.buttonUpdateMusicDatabase.ForeColor = System.Drawing.Color.Black;
-            this.buttonUpdateMusicDatabase.Location = new System.Drawing.Point(15, 301);
+            this.buttonUpdateMusicDatabase.Location = new System.Drawing.Point(24, 532);
             this.buttonUpdateMusicDatabase.Name = "buttonUpdateMusicDatabase";
             this.buttonUpdateMusicDatabase.Size = new System.Drawing.Size(284, 53);
             this.buttonUpdateMusicDatabase.TabIndex = 10;
@@ -379,7 +385,7 @@
             this.buttonConfigurationSave.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(255)))), ((int)(((byte)(128)))));
             this.buttonConfigurationSave.FontSize = MetroFramework.MetroButtonSize.Tall;
             this.buttonConfigurationSave.ForeColor = System.Drawing.Color.Black;
-            this.buttonConfigurationSave.Location = new System.Drawing.Point(931, 301);
+            this.buttonConfigurationSave.Location = new System.Drawing.Point(1052, 532);
             this.buttonConfigurationSave.Name = "buttonConfigurationSave";
             this.buttonConfigurationSave.Size = new System.Drawing.Size(150, 53);
             this.buttonConfigurationSave.TabIndex = 3;
@@ -395,7 +401,7 @@
             this.buttonConfigurationCancel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
             this.buttonConfigurationCancel.FontSize = MetroFramework.MetroButtonSize.Medium;
             this.buttonConfigurationCancel.ForeColor = System.Drawing.Color.Black;
-            this.buttonConfigurationCancel.Location = new System.Drawing.Point(758, 301);
+            this.buttonConfigurationCancel.Location = new System.Drawing.Point(887, 532);
             this.buttonConfigurationCancel.Name = "buttonConfigurationCancel";
             this.buttonConfigurationCancel.Size = new System.Drawing.Size(150, 53);
             this.buttonConfigurationCancel.TabIndex = 2;
@@ -423,6 +429,27 @@
             this.toggleRepeatPlaylist.TabIndex = 6;
             this.toggleRepeatPlaylist.Text = "Off";
             this.toggleRepeatPlaylist.UseSelectable = true;
+            this.toggleRepeatPlaylist.CheckedChanged += new System.EventHandler(this.toggleRepeatPlaylist_CheckedChanged);
+            // 
+            // labelMusicFade
+            // 
+            this.labelMusicFade.AutoSize = true;
+            this.labelMusicFade.Location = new System.Drawing.Point(731, 14);
+            this.labelMusicFade.Name = "labelMusicFade";
+            this.labelMusicFade.Size = new System.Drawing.Size(145, 19);
+            this.labelMusicFade.TabIndex = 9;
+            this.labelMusicFade.Text = "Transição entre músicas";
+            // 
+            // toggleFadeIn
+            // 
+            this.toggleFadeIn.AutoSize = true;
+            this.toggleFadeIn.Location = new System.Drawing.Point(903, 16);
+            this.toggleFadeIn.Name = "toggleFadeIn";
+            this.toggleFadeIn.Size = new System.Drawing.Size(80, 17);
+            this.toggleFadeIn.TabIndex = 8;
+            this.toggleFadeIn.Text = "Off";
+            this.toggleFadeIn.UseSelectable = true;
+            this.toggleFadeIn.CheckedChanged += new System.EventHandler(this.toggleFadeIn_CheckedChanged);
             // 
             // frmMain
             // 
@@ -475,5 +502,7 @@
         private MetroFramework.Controls.MetroToggle toggleIsPlaying;
         private MetroFramework.Controls.MetroLabel labelRepeat;
         private MetroFramework.Controls.MetroToggle toggleRepeatPlaylist;
+        private MetroFramework.Controls.MetroLabel labelMusicFade;
+        private MetroFramework.Controls.MetroToggle toggleFadeIn;
     }
 }
