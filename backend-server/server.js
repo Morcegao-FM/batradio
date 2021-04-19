@@ -32,7 +32,7 @@ var start = async function () {
   await getFiles();
   await getPlaylist();
   await getStatus();
-  setInterval(Ping, 15000);
+  setInterval(Ping, 59000);
   logger.info("Inicializando o servidor WEB. PORT ", config.webserver.port);
   app.listen(config.webserver.port);
 
@@ -153,7 +153,7 @@ async function getStatus() {
     currentStatus.next = currentPlaylist.find((t) => {
       return t.Pos == status.nextsong;
     });
-    logger.debug(`CURRENT SONG: ${currentStatus.currentSong.Title}  VOLUME: ${currentStatus}`);
+    logger.debug(`CURRENT SONG: ${currentStatus.currentSong.Title}`);
   });
   logger.info("END getStatus");
 }
@@ -213,6 +213,56 @@ app.post('/playorpause', async (req,res) =>
 
 
 
+app.post('/addtoplaylist', async (req,res) =>
+{
+  logger.debug('/addtoplaylist required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  musics = JSON.parse(req.header("files"));
+  position = req.header("position");
+  musics.forEach( async  (music) => { 
+      await promisedCommand('addid', [music, position]).then( async (data) => {logger.debug(`Music added ${music} at ${position} - ${ JSON.stringify(data) }`)});
+  });
+  await getPlaylist();
+  return res.status(200).send(currentPlaylist).end();
+});
+
+
+
+app.post('/delete', async (req,res) =>
+{
+  logger.debug('/delete required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  musics = JSON.parse(req.header("files"));  
+  musics.forEach( async  (music) => { 
+      await promisedCommand('delete', [music]).then( async (data) => {logger.debug(`Music removed from playlist at ${music} - ${ JSON.stringify(data) }`)});
+  });
+  await getPlaylist();
+  return res.status(200).send(currentPlaylist).end();
+});
+
+app.post('/move', async (req,res) =>
+{
+  logger.debug('/move required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  var from = JSON.parse(req.header("from-pos"));  
+  var to = JSON.parse(req.header("to-pos"));  
+  await promisedCommand('move', [from,to]).then( async (data) => {logger.debug(`Music moved from ${from} to ${to} - ${ JSON.stringify(data) }`)});
+  await getPlaylist();
+  return res.status(200).send(currentPlaylist).end();
+});
+
+
+
+
 app.post('/repeat', async (req,res) =>
 {
   console.log(currentStatus);
@@ -245,7 +295,7 @@ app.post('/shuffle', async (req,res) =>
   logger.debug("/shuffle will be sent");
   await getStatus();
   var command = '1';
-  if(currentStatus.state == '1')
+  if(currentStatus.random == '1')
     command = '0'  
   isBusy();
   await promisedCommand('random', [command]).then((data) => {busy = false;} )  
