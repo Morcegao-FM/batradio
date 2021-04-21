@@ -21,6 +21,7 @@ namespace BatRadio.UI
         public string state { get; set; }
         public int song { get; set; }
         public int songid { get; set; }
+        
         public string time { get; set; }
         public float elapsed { get; set; }
         public int bitrate { get; set; }
@@ -30,14 +31,14 @@ namespace BatRadio.UI
 
         public int nextsong { get; set; }
         public int nextsongid { get; set; }
-
+        
         public StatusSong currentSong { get; set; }
         public StatusSong nextSong { get; set; }
 
 
         public string GetDurationStatus()
         {
-            return string.Format("{0} de {1} )  ",  RadioHelper.SecondsToString(elapsed), RadioHelper.SecondsToString(duration));
+            return string.Format("{0} de {1}",  RadioHelper.SecondsToString(elapsed), RadioHelper.SecondsToString(currentSong.Time));
         }
 
 

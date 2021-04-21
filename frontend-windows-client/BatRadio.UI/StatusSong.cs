@@ -8,9 +8,11 @@ namespace BatRadio.UI
 {
     class StatusSong
     {
-        public string file { get; set; }
-        
-        [Newtonsoft.Json.JsonProperty(propertyName:"Last-Modified")]
+        public string file { get; set; }        
+
+        public string InternalID { get { return string.Format("{0}:{1}", this.Id, this.Pos); } }
+
+        [Newtonsoft.Json.JsonProperty(propertyName: "Last-Modified")]
         public DateTime LastModified { get; set; }
 
         public string Artist { get; set; }
@@ -18,12 +20,12 @@ namespace BatRadio.UI
         public int Time { get; set; }
         public double duration { get; set; }
 
-        public string TotalDuration { get { return RadioHelper.SecondsToString(this.duration);  } }
+        public string TotalDuration { get { return RadioHelper.SecondsToString(this.Time); } }
         public int Pos { get; set; }
         public int Id { get; set; }
         public string Album { get; set; }
         public string Genre { get; set; }
-
+        public DateTime NextPresentation {get;set;}
 
         public bool Matches(string[] Information)
         {            

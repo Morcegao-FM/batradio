@@ -15,13 +15,7 @@ namespace BatRadio.UI
         [STAThread]
         static void Main()
         {
-            string server = ConfigurationManager.AppSettings["Server"]??"localhost";
-            int port = int.Parse( ConfigurationManager.AppSettings["Port"]??"9320");
-            string apiKey = ConfigurationManager.AppSettings["APIKey"]??"";
-
-            BatRadioClient.RadioConfig.APIKey = apiKey;
-            BatRadioClient.RadioConfig.Port = port;
-            BatRadioClient.RadioConfig.Server = server;
+            BatRadioClient.RadioConfig.Load();            
             
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

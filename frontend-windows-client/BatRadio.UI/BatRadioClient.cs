@@ -12,11 +12,50 @@ namespace BatRadio.UI
     {
         public static HttpClient Client = new HttpClient();
         public static Config RadioConfig = new Config();
-
         private string GetString(string URL)
         {
             return this.GetString(URL, new Dictionary<string, string>());
         }
+
+
+        public static void TimeCalculation(List<StatusSong> Songs, Status CurrentStatus)
+        {
+            
+            var initialIndex = Songs.FindIndex(t => { return t.Pos == CurrentStatus.song; });
+            if (initialIndex == -1) return;
+            var song = Songs[initialIndex];
+
+            song.NextPresentation = DateTime.Now.AddSeconds((int)CurrentStatus.elapsed * -1);
+            DateTime referenteDateTime = song.NextPresentation;
+            StatusSong lastSong = song;
+
+            for (int i = initialIndex + 1; i < Songs.Count; i++)
+            {
+                Songs[i].NextPresentation = referenteDateTime.AddSeconds((int)lastSong.Time);
+                referenteDateTime = Songs[i].NextPresentation;
+                lastSong = Songs[i];
+            }
+            
+            // Sem repetição, calcula pra trás
+            if (CurrentStatus.repeat == 0)
+            {
+                referenteDateTime = song.NextPresentation;                
+                for (int i = initialIndex - 1 ; i > -1; i--)
+                {
+                    Songs[i].NextPresentation = referenteDateTime.Subtract(new TimeSpan(0, 0, (int)Songs[i].Time));
+                    referenteDateTime = Songs[i].NextPresentation;
+                }
+            }
+            else
+            {
+                for(int i = 0; i < initialIndex; i++)
+                {
+                    Songs[i].NextPresentation = referenteDateTime.AddSeconds((int)Songs[i].Time);
+                    referenteDateTime = Songs[i].NextPresentation;
+                }
+            }
+        }
+
         private string GetString(string URL, Dictionary<string,string> AdditionalHeaders)
         {                
             Client.DefaultRequestHeaders.Clear();
@@ -94,6 +133,7 @@ namespace BatRadio.UI
             return JsonConvert.DeserializeObject<List<StatusSong>>(status);
         }
 
+
         public List<StatusSong> GetSongs(bool updateDatabase = false)
         {
             var parameters = new Dictionary<string, string>();
@@ -115,6 +155,32 @@ namespace BatRadio.UI
         {
             var status = PostString(PrepareUrl("shuffle"));
             return JsonConvert.DeserializeObject<Status>(status);
+
+        }
+
+        internal List<StatusSong> AddMusic(List<string> files, int position)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("files",  JsonConvert.SerializeObject(files));
+            parameters.Add("position", position.ToString());
+
+            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("addtoplaylist"), parameters));
+        }
+
+        public List<StatusSong> RemoveMusic(List<string> files)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("files", JsonConvert.SerializeObject(files));            
+
+            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("delete"), parameters));
+        }
+
+        public List<StatusSong> Move(int currentPos, int newPos)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("from-pos", currentPos.ToString());
+            parameters.Add("to-pos", newPos.ToString());
+            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("move"), parameters));
 
         }
     }
