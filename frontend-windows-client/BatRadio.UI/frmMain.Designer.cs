@@ -29,16 +29,16 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.styleManager = new MetroFramework.Components.MetroStyleManager(this.components);
             this.panelMusicStatus = new MetroFramework.Controls.MetroPanel();
             this.trackCurrentMusic = new MetroFramework.Controls.MetroTrackBar();
@@ -51,21 +51,13 @@
             this.textboxSearchPlaylist = new MetroFramework.Controls.MetroTextBox();
             this.labelSearchPlaylist = new MetroFramework.Controls.MetroLabel();
             this.gridPlaylist = new MetroFramework.Controls.MetroGrid();
-            this.gridPlaylistPosition = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datagridPlaylistTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datagridPlaylistFile = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datagridPlaylistArtist = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datagridPlaylistTitle = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datagridPlaylistTotalDuration = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.datagridPlaylistAlbum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.contextMenuPlaylist = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuRemoveMusic = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuMoveAbove = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuMoveBellow = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuSwap = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuMerge = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.menuGoToCurrent = new System.Windows.Forms.ToolStripMenuItem();
+            this.gridPlaylistPosition = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panSearch = new MetroFramework.Controls.MetroPanel();
             this.metroButton2 = new MetroFramework.Controls.MetroButton();
             this.metroButton1 = new MetroFramework.Controls.MetroButton();
@@ -82,15 +74,6 @@
             this.menuAddBellowPlaylist = new System.Windows.Forms.ToolStripMenuItem();
             this.metroTabPage2 = new MetroFramework.Controls.MetroTabPage();
             this.tabConfiguration = new MetroFramework.Controls.MetroTabPage();
-            this.buttonUpdateMusicDatabase = new MetroFramework.Controls.MetroButton();
-            this.textboxServerAPIKey = new MetroFramework.Controls.MetroTextBox();
-            this.textboxServerPort = new MetroFramework.Controls.MetroTextBox();
-            this.textboxServerAddress = new MetroFramework.Controls.MetroTextBox();
-            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
-            this.labelServerPort = new MetroFramework.Controls.MetroLabel();
-            this.labelServerAddress = new MetroFramework.Controls.MetroLabel();
-            this.buttonConfigurationSave = new MetroFramework.Controls.MetroButton();
-            this.buttonConfigurationCancel = new MetroFramework.Controls.MetroButton();
             this.metroPanel2 = new MetroFramework.Controls.MetroPanel();
             this.labelMusicFade = new MetroFramework.Controls.MetroLabel();
             this.toggleFadeIn = new MetroFramework.Controls.MetroToggle();
@@ -100,18 +83,37 @@
             this.toggleShuffle = new MetroFramework.Controls.MetroToggle();
             this.labelIsPlaying = new MetroFramework.Controls.MetroLabel();
             this.toggleIsPlaying = new MetroFramework.Controls.MetroToggle();
+            this.buttonUpdateMusicDatabase = new MetroFramework.Controls.MetroButton();
+            this.textboxServerAPIKey = new MetroFramework.Controls.MetroTextBox();
+            this.textboxServerPort = new MetroFramework.Controls.MetroTextBox();
+            this.textboxServerAddress = new MetroFramework.Controls.MetroTextBox();
+            this.metroLabel1 = new MetroFramework.Controls.MetroLabel();
+            this.labelServerPort = new MetroFramework.Controls.MetroLabel();
+            this.labelServerAddress = new MetroFramework.Controls.MetroLabel();
+            this.buttonConfigurationSave = new MetroFramework.Controls.MetroButton();
+            this.buttonConfigurationCancel = new MetroFramework.Controls.MetroButton();
+            this.contextMenuPlaylist = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.menuRemoveMusic = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMoveAbove = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuMoveBellow = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuSwap = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuMerge = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuGoToCurrent = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuPlaySelectedMusic = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.styleManager)).BeginInit();
             this.panelMusicStatus.SuspendLayout();
             this.tabMain.SuspendLayout();
             this.tabPlaying.SuspendLayout();
             this.metroPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridPlaylist)).BeginInit();
-            this.contextMenuPlaylist.SuspendLayout();
             this.panSearch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridSearch)).BeginInit();
             this.contextSearchGrid.SuspendLayout();
             this.tabConfiguration.SuspendLayout();
             this.metroPanel2.SuspendLayout();
+            this.contextMenuPlaylist.SuspendLayout();
             this.SuspendLayout();
             // 
             // styleManager
@@ -129,7 +131,7 @@
             this.panelMusicStatus.HorizontalScrollbarSize = 10;
             this.panelMusicStatus.Location = new System.Drawing.Point(20, 701);
             this.panelMusicStatus.Name = "panelMusicStatus";
-            this.panelMusicStatus.Size = new System.Drawing.Size(1239, 57);
+            this.panelMusicStatus.Size = new System.Drawing.Size(1285, 57);
             this.panelMusicStatus.TabIndex = 0;
             this.panelMusicStatus.VerticalScrollbarBarColor = true;
             this.panelMusicStatus.VerticalScrollbarHighlightOnWheel = false;
@@ -141,7 +143,7 @@
             this.trackCurrentMusic.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.trackCurrentMusic.Location = new System.Drawing.Point(0, 30);
             this.trackCurrentMusic.Name = "trackCurrentMusic";
-            this.trackCurrentMusic.Size = new System.Drawing.Size(1239, 27);
+            this.trackCurrentMusic.Size = new System.Drawing.Size(1285, 27);
             this.trackCurrentMusic.TabIndex = 3;
             this.trackCurrentMusic.Text = "trackMusicPosition";
             this.trackCurrentMusic.Scroll += new System.Windows.Forms.ScrollEventHandler(this.trackCurrentMusic_Scroll);
@@ -151,7 +153,7 @@
             this.labelNowPlaying.Dock = System.Windows.Forms.DockStyle.Top;
             this.labelNowPlaying.Location = new System.Drawing.Point(0, 0);
             this.labelNowPlaying.Name = "labelNowPlaying";
-            this.labelNowPlaying.Size = new System.Drawing.Size(1239, 19);
+            this.labelNowPlaying.Size = new System.Drawing.Size(1285, 19);
             this.labelNowPlaying.TabIndex = 2;
             this.labelNowPlaying.Text = "Não conectado - Por favor, aguarde ...";
             // 
@@ -169,7 +171,7 @@
             this.tabMain.Location = new System.Drawing.Point(20, 60);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(1239, 641);
+            this.tabMain.Size = new System.Drawing.Size(1285, 641);
             this.tabMain.Style = MetroFramework.MetroColorStyle.Red;
             this.tabMain.TabIndex = 1;
             this.tabMain.UseSelectable = true;
@@ -183,7 +185,7 @@
             this.tabPlaying.HorizontalScrollbarSize = 10;
             this.tabPlaying.Location = new System.Drawing.Point(4, 38);
             this.tabPlaying.Name = "tabPlaying";
-            this.tabPlaying.Size = new System.Drawing.Size(1231, 599);
+            this.tabPlaying.Size = new System.Drawing.Size(1277, 599);
             this.tabPlaying.TabIndex = 0;
             this.tabPlaying.Text = "Tocando Agora";
             this.tabPlaying.VerticalScrollbarBarColor = true;
@@ -202,7 +204,7 @@
             this.metroPanel1.HorizontalScrollbarSize = 10;
             this.metroPanel1.Location = new System.Drawing.Point(0, 304);
             this.metroPanel1.Name = "metroPanel1";
-            this.metroPanel1.Size = new System.Drawing.Size(1231, 295);
+            this.metroPanel1.Size = new System.Drawing.Size(1277, 295);
             this.metroPanel1.Style = MetroFramework.MetroColorStyle.Purple;
             this.metroPanel1.TabIndex = 4;
             this.metroPanel1.VerticalScrollbarBarColor = true;
@@ -268,12 +270,12 @@
             this.gridPlaylist.AllowUserToDeleteRows = false;
             this.gridPlaylist.AllowUserToOrderColumns = true;
             this.gridPlaylist.AllowUserToResizeRows = false;
-            dataGridViewCellStyle11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-            dataGridViewCellStyle11.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle11.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle11.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            dataGridViewCellStyle11.SelectionForeColor = System.Drawing.Color.White;
-            this.gridPlaylist.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle11;
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
+            this.gridPlaylist.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.gridPlaylist.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -282,32 +284,31 @@
             this.gridPlaylist.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.gridPlaylist.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.gridPlaylist.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle12.BackColor = System.Drawing.Color.Maroon;
-            dataGridViewCellStyle12.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle12.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(19)))), ((int)(((byte)(73)))));
-            dataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.gridPlaylist.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle12;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(17)))), ((int)(((byte)(65)))));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(19)))), ((int)(((byte)(73)))));
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.gridPlaylist.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.gridPlaylist.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridPlaylist.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.gridPlaylistPosition,
             this.datagridPlaylistTime,
             this.datagridPlaylistFile,
             this.datagridPlaylistArtist,
             this.datagridPlaylistTitle,
             this.datagridPlaylistTotalDuration,
-            this.datagridPlaylistAlbum});
-            this.gridPlaylist.ContextMenuStrip = this.contextMenuPlaylist;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(19)))), ((int)(((byte)(73)))));
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.gridPlaylist.DefaultCellStyle = dataGridViewCellStyle13;
+            this.datagridPlaylistAlbum,
+            this.gridPlaylistPosition});
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(19)))), ((int)(((byte)(73)))));
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.gridPlaylist.DefaultCellStyle = dataGridViewCellStyle3;
             this.gridPlaylist.EnableHeadersVisualStyles = false;
             this.gridPlaylist.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.gridPlaylist.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
@@ -315,35 +316,30 @@
             this.gridPlaylist.Name = "gridPlaylist";
             this.gridPlaylist.ReadOnly = true;
             this.gridPlaylist.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(17)))), ((int)(((byte)(65)))));
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(19)))), ((int)(((byte)(73)))));
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.gridPlaylist.RowHeadersDefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(209)))), ((int)(((byte)(17)))), ((int)(((byte)(65)))));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(19)))), ((int)(((byte)(73)))));
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.gridPlaylist.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
             this.gridPlaylist.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle15.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle15.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.gridPlaylist.RowsDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle5.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.White;
+            this.gridPlaylist.RowsDefaultCellStyle = dataGridViewCellStyle5;
             this.gridPlaylist.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.gridPlaylist.ShowCellToolTips = false;
             this.gridPlaylist.ShowEditingIcon = false;
-            this.gridPlaylist.Size = new System.Drawing.Size(1231, 205);
+            this.gridPlaylist.Size = new System.Drawing.Size(1277, 205);
             this.gridPlaylist.Style = MetroFramework.MetroColorStyle.Red;
             this.gridPlaylist.TabIndex = 3;
             this.gridPlaylist.UseCustomBackColor = true;
             this.gridPlaylist.UseCustomForeColor = true;
-            // 
-            // gridPlaylistPosition
-            // 
-            this.gridPlaylistPosition.DataPropertyName = "Pos";
-            this.gridPlaylistPosition.HeaderText = "Posição";
-            this.gridPlaylistPosition.Name = "gridPlaylistPosition";
-            this.gridPlaylistPosition.ReadOnly = true;
+            this.gridPlaylist.MouseClick += new System.Windows.Forms.MouseEventHandler(this.gridPlaylist_MouseClick);
             // 
             // datagridPlaylistTime
             // 
@@ -387,71 +383,12 @@
             this.datagridPlaylistAlbum.Name = "datagridPlaylistAlbum";
             this.datagridPlaylistAlbum.ReadOnly = true;
             // 
-            // contextMenuPlaylist
+            // gridPlaylistPosition
             // 
-            this.contextMenuPlaylist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuRemoveMusic,
-            this.menuMoveAbove,
-            this.menuMoveBellow,
-            this.menuSwap,
-            this.mnuMerge,
-            this.toolStripSeparator1,
-            this.menuGoToCurrent});
-            this.contextMenuPlaylist.Name = "contextMenuPlaylist";
-            this.contextMenuPlaylist.Size = new System.Drawing.Size(348, 142);
-            // 
-            // menuRemoveMusic
-            // 
-            this.menuRemoveMusic.Name = "menuRemoveMusic";
-            this.menuRemoveMusic.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.menuRemoveMusic.Size = new System.Drawing.Size(347, 22);
-            this.menuRemoveMusic.Text = "&Remover musicas selecionadas";
-            this.menuRemoveMusic.Click += new System.EventHandler(this.menuRemoveMusic_Click);
-            // 
-            // menuMoveAbove
-            // 
-            this.menuMoveAbove.Name = "menuMoveAbove";
-            this.menuMoveAbove.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
-            this.menuMoveAbove.Size = new System.Drawing.Size(347, 22);
-            this.menuMoveAbove.Text = "&Mover para cima músicas selecionadas";
-            this.menuMoveAbove.Click += new System.EventHandler(this.menuMoveAbove_Click);
-            // 
-            // menuMoveBellow
-            // 
-            this.menuMoveBellow.Name = "menuMoveBellow";
-            this.menuMoveBellow.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
-            this.menuMoveBellow.Size = new System.Drawing.Size(347, 22);
-            this.menuMoveBellow.Text = "Mover para &baixo músicas selecionadas";
-            this.menuMoveBellow.Click += new System.EventHandler(this.menuMoveBellow_Click);
-            // 
-            // menuSwap
-            // 
-            this.menuSwap.Name = "menuSwap";
-            this.menuSwap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
-            this.menuSwap.Size = new System.Drawing.Size(347, 22);
-            this.menuSwap.Text = "Trocar de Lugar";
-            this.menuSwap.Click += new System.EventHandler(this.menuSwap_Click);
-            // 
-            // mnuMerge
-            // 
-            this.mnuMerge.Name = "mnuMerge";
-            this.mnuMerge.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D0)));
-            this.mnuMerge.Size = new System.Drawing.Size(347, 22);
-            this.mnuMerge.Text = "&Transformar em Program com Vinhetas";
-            this.mnuMerge.Click += new System.EventHandler(this.mnuMerge_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(344, 6);
-            // 
-            // menuGoToCurrent
-            // 
-            this.menuGoToCurrent.Name = "menuGoToCurrent";
-            this.menuGoToCurrent.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.menuGoToCurrent.Size = new System.Drawing.Size(347, 22);
-            this.menuGoToCurrent.Text = "Ir para música atual";
-            this.menuGoToCurrent.Click += new System.EventHandler(this.menuGoToCurrent_Click);
+            this.gridPlaylistPosition.DataPropertyName = "Pos";
+            this.gridPlaylistPosition.HeaderText = "Posição";
+            this.gridPlaylistPosition.Name = "gridPlaylistPosition";
+            this.gridPlaylistPosition.ReadOnly = true;
             // 
             // panSearch
             // 
@@ -467,7 +404,7 @@
             this.panSearch.HorizontalScrollbarSize = 10;
             this.panSearch.Location = new System.Drawing.Point(0, 0);
             this.panSearch.Name = "panSearch";
-            this.panSearch.Size = new System.Drawing.Size(1231, 304);
+            this.panSearch.Size = new System.Drawing.Size(1277, 304);
             this.panSearch.Style = MetroFramework.MetroColorStyle.Silver;
             this.panSearch.TabIndex = 3;
             this.panSearch.VerticalScrollbarBarColor = true;
@@ -543,10 +480,10 @@
             this.gridSearch.AllowUserToDeleteRows = false;
             this.gridSearch.AllowUserToOrderColumns = true;
             this.gridSearch.AllowUserToResizeRows = false;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.Red;
-            this.gridSearch.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.BackColor = System.Drawing.Color.White;
+            dataGridViewCellStyle6.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.Red;
+            this.gridSearch.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle6;
             this.gridSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
@@ -555,14 +492,14 @@
             this.gridSearch.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.gridSearch.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.gridSearch.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.gridSearch.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.gridSearch.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.gridSearch.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.gridSearch.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.gridSearchFile,
@@ -571,14 +508,14 @@
             this.gridSearchDuration,
             this.gridSearchAlbum});
             this.gridSearch.ContextMenuStrip = this.contextSearchGrid;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(136)))), ((int)(((byte)(136)))));
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.gridSearch.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(136)))), ((int)(((byte)(136)))));
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.gridSearch.DefaultCellStyle = dataGridViewCellStyle8;
             this.gridSearch.EnableHeadersVisualStyles = false;
             this.gridSearch.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.gridSearch.GridColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
@@ -586,23 +523,23 @@
             this.gridSearch.Name = "gridSearch";
             this.gridSearch.ReadOnly = true;
             this.gridSearch.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
-            dataGridViewCellStyle4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.gridSearch.RowHeadersDefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
+            dataGridViewCellStyle9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(255)))), ((int)(((byte)(255)))));
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(25)))), ((int)(((byte)(25)))), ((int)(((byte)(25)))));
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(17)))), ((int)(((byte)(17)))), ((int)(((byte)(17)))));
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.gridSearch.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.gridSearch.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            dataGridViewCellStyle5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle5.ForeColor = System.Drawing.Color.Black;
-            dataGridViewCellStyle5.SelectionBackColor = System.Drawing.Color.Red;
-            dataGridViewCellStyle5.SelectionForeColor = System.Drawing.Color.White;
-            this.gridSearch.RowsDefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            dataGridViewCellStyle10.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle10.ForeColor = System.Drawing.Color.Black;
+            dataGridViewCellStyle10.SelectionBackColor = System.Drawing.Color.Red;
+            dataGridViewCellStyle10.SelectionForeColor = System.Drawing.Color.White;
+            this.gridSearch.RowsDefaultCellStyle = dataGridViewCellStyle10;
             this.gridSearch.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.gridSearch.Size = new System.Drawing.Size(1229, 246);
+            this.gridSearch.Size = new System.Drawing.Size(1275, 246);
             this.gridSearch.Style = MetroFramework.MetroColorStyle.Black;
             this.gridSearch.TabIndex = 2;
             // 
@@ -702,6 +639,108 @@
             this.tabConfiguration.VerticalScrollbarBarColor = true;
             this.tabConfiguration.VerticalScrollbarHighlightOnWheel = false;
             this.tabConfiguration.VerticalScrollbarSize = 10;
+            // 
+            // metroPanel2
+            // 
+            this.metroPanel2.Controls.Add(this.labelMusicFade);
+            this.metroPanel2.Controls.Add(this.toggleFadeIn);
+            this.metroPanel2.Controls.Add(this.labelRepeat);
+            this.metroPanel2.Controls.Add(this.toggleRepeatPlaylist);
+            this.metroPanel2.Controls.Add(this.labelShuffle);
+            this.metroPanel2.Controls.Add(this.toggleShuffle);
+            this.metroPanel2.Controls.Add(this.labelIsPlaying);
+            this.metroPanel2.Controls.Add(this.toggleIsPlaying);
+            this.metroPanel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.metroPanel2.HorizontalScrollbarBarColor = true;
+            this.metroPanel2.HorizontalScrollbarHighlightOnWheel = false;
+            this.metroPanel2.HorizontalScrollbarSize = 10;
+            this.metroPanel2.Location = new System.Drawing.Point(0, 0);
+            this.metroPanel2.Name = "metroPanel2";
+            this.metroPanel2.Size = new System.Drawing.Size(1231, 46);
+            this.metroPanel2.TabIndex = 11;
+            this.metroPanel2.VerticalScrollbarBarColor = true;
+            this.metroPanel2.VerticalScrollbarHighlightOnWheel = false;
+            this.metroPanel2.VerticalScrollbarSize = 10;
+            // 
+            // labelMusicFade
+            // 
+            this.labelMusicFade.AutoSize = true;
+            this.labelMusicFade.Location = new System.Drawing.Point(731, 14);
+            this.labelMusicFade.Name = "labelMusicFade";
+            this.labelMusicFade.Size = new System.Drawing.Size(145, 19);
+            this.labelMusicFade.TabIndex = 9;
+            this.labelMusicFade.Text = "Transição entre músicas";
+            // 
+            // toggleFadeIn
+            // 
+            this.toggleFadeIn.AutoSize = true;
+            this.toggleFadeIn.Location = new System.Drawing.Point(903, 16);
+            this.toggleFadeIn.Name = "toggleFadeIn";
+            this.toggleFadeIn.Size = new System.Drawing.Size(80, 17);
+            this.toggleFadeIn.TabIndex = 8;
+            this.toggleFadeIn.Text = "Off";
+            this.toggleFadeIn.UseSelectable = true;
+            this.toggleFadeIn.CheckedChanged += new System.EventHandler(this.toggleFadeIn_CheckedChanged);
+            // 
+            // labelRepeat
+            // 
+            this.labelRepeat.AutoSize = true;
+            this.labelRepeat.Location = new System.Drawing.Point(424, 14);
+            this.labelRepeat.Name = "labelRepeat";
+            this.labelRepeat.Size = new System.Drawing.Size(166, 19);
+            this.labelRepeat.TabIndex = 7;
+            this.labelRepeat.Text = "Repetir playlist ao término:";
+            // 
+            // toggleRepeatPlaylist
+            // 
+            this.toggleRepeatPlaylist.AutoSize = true;
+            this.toggleRepeatPlaylist.Location = new System.Drawing.Point(596, 16);
+            this.toggleRepeatPlaylist.Name = "toggleRepeatPlaylist";
+            this.toggleRepeatPlaylist.Size = new System.Drawing.Size(80, 17);
+            this.toggleRepeatPlaylist.TabIndex = 6;
+            this.toggleRepeatPlaylist.Text = "Off";
+            this.toggleRepeatPlaylist.UseSelectable = true;
+            this.toggleRepeatPlaylist.CheckedChanged += new System.EventHandler(this.toggleRepeatPlaylist_CheckedChanged);
+            // 
+            // labelShuffle
+            // 
+            this.labelShuffle.AutoSize = true;
+            this.labelShuffle.Location = new System.Drawing.Point(238, 14);
+            this.labelShuffle.Name = "labelShuffle";
+            this.labelShuffle.Size = new System.Drawing.Size(48, 19);
+            this.labelShuffle.TabIndex = 5;
+            this.labelShuffle.Text = "Shuffle";
+            // 
+            // toggleShuffle
+            // 
+            this.toggleShuffle.AutoSize = true;
+            this.toggleShuffle.Location = new System.Drawing.Point(292, 16);
+            this.toggleShuffle.Name = "toggleShuffle";
+            this.toggleShuffle.Size = new System.Drawing.Size(80, 17);
+            this.toggleShuffle.TabIndex = 4;
+            this.toggleShuffle.Text = "Off";
+            this.toggleShuffle.UseSelectable = true;
+            this.toggleShuffle.CheckedChanged += new System.EventHandler(this.toggleShuffle_CheckedChanged);
+            // 
+            // labelIsPlaying
+            // 
+            this.labelIsPlaying.AutoSize = true;
+            this.labelIsPlaying.Location = new System.Drawing.Point(7, 14);
+            this.labelIsPlaying.Name = "labelIsPlaying";
+            this.labelIsPlaying.Size = new System.Drawing.Size(83, 19);
+            this.labelIsPlaying.TabIndex = 3;
+            this.labelIsPlaying.Text = "Tocar Playlist";
+            // 
+            // toggleIsPlaying
+            // 
+            this.toggleIsPlaying.AutoSize = true;
+            this.toggleIsPlaying.Location = new System.Drawing.Point(98, 16);
+            this.toggleIsPlaying.Name = "toggleIsPlaying";
+            this.toggleIsPlaying.Size = new System.Drawing.Size(80, 17);
+            this.toggleIsPlaying.TabIndex = 2;
+            this.toggleIsPlaying.Text = "Off";
+            this.toggleIsPlaying.UseSelectable = true;
+            this.toggleIsPlaying.CheckedChanged += new System.EventHandler(this.toggleIsPlaying_CheckedChanged);
             // 
             // buttonUpdateMusicDatabase
             // 
@@ -873,118 +912,97 @@
             this.buttonConfigurationCancel.UseSelectable = true;
             this.buttonConfigurationCancel.Click += new System.EventHandler(this.buttonConfigurationCancel_Click);
             // 
-            // metroPanel2
+            // contextMenuPlaylist
             // 
-            this.metroPanel2.Controls.Add(this.labelMusicFade);
-            this.metroPanel2.Controls.Add(this.toggleFadeIn);
-            this.metroPanel2.Controls.Add(this.labelRepeat);
-            this.metroPanel2.Controls.Add(this.toggleRepeatPlaylist);
-            this.metroPanel2.Controls.Add(this.labelShuffle);
-            this.metroPanel2.Controls.Add(this.toggleShuffle);
-            this.metroPanel2.Controls.Add(this.labelIsPlaying);
-            this.metroPanel2.Controls.Add(this.toggleIsPlaying);
-            this.metroPanel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.metroPanel2.HorizontalScrollbarBarColor = true;
-            this.metroPanel2.HorizontalScrollbarHighlightOnWheel = false;
-            this.metroPanel2.HorizontalScrollbarSize = 10;
-            this.metroPanel2.Location = new System.Drawing.Point(0, 0);
-            this.metroPanel2.Name = "metroPanel2";
-            this.metroPanel2.Size = new System.Drawing.Size(1231, 46);
-            this.metroPanel2.TabIndex = 11;
-            this.metroPanel2.VerticalScrollbarBarColor = true;
-            this.metroPanel2.VerticalScrollbarHighlightOnWheel = false;
-            this.metroPanel2.VerticalScrollbarSize = 10;
+            this.contextMenuPlaylist.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuRemoveMusic,
+            this.menuMoveAbove,
+            this.menuMoveBellow,
+            this.menuSwap,
+            this.mnuMerge,
+            this.toolStripSeparator1,
+            this.menuGoToCurrent,
+            this.toolStripSeparator2,
+            this.menuPlaySelectedMusic});
+            this.contextMenuPlaylist.Name = "contextMenuPlaylist";
+            this.contextMenuPlaylist.Size = new System.Drawing.Size(348, 170);
             // 
-            // labelMusicFade
+            // menuRemoveMusic
             // 
-            this.labelMusicFade.AutoSize = true;
-            this.labelMusicFade.Location = new System.Drawing.Point(731, 14);
-            this.labelMusicFade.Name = "labelMusicFade";
-            this.labelMusicFade.Size = new System.Drawing.Size(145, 19);
-            this.labelMusicFade.TabIndex = 9;
-            this.labelMusicFade.Text = "Transição entre músicas";
+            this.menuRemoveMusic.Name = "menuRemoveMusic";
+            this.menuRemoveMusic.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
+            this.menuRemoveMusic.Size = new System.Drawing.Size(347, 22);
+            this.menuRemoveMusic.Text = "&Remover musicas selecionadas";
+            this.menuRemoveMusic.Click += new System.EventHandler(this.menuRemoveMusic_Click);
             // 
-            // toggleFadeIn
+            // menuMoveAbove
             // 
-            this.toggleFadeIn.AutoSize = true;
-            this.toggleFadeIn.Location = new System.Drawing.Point(903, 16);
-            this.toggleFadeIn.Name = "toggleFadeIn";
-            this.toggleFadeIn.Size = new System.Drawing.Size(80, 17);
-            this.toggleFadeIn.TabIndex = 8;
-            this.toggleFadeIn.Text = "Off";
-            this.toggleFadeIn.UseSelectable = true;
-            this.toggleFadeIn.CheckedChanged += new System.EventHandler(this.toggleFadeIn_CheckedChanged);
+            this.menuMoveAbove.Name = "menuMoveAbove";
+            this.menuMoveAbove.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Up)));
+            this.menuMoveAbove.Size = new System.Drawing.Size(347, 22);
+            this.menuMoveAbove.Text = "&Mover para cima músicas selecionadas";
+            this.menuMoveAbove.Click += new System.EventHandler(this.menuMoveAbove_Click);
             // 
-            // labelRepeat
+            // menuMoveBellow
             // 
-            this.labelRepeat.AutoSize = true;
-            this.labelRepeat.Location = new System.Drawing.Point(424, 14);
-            this.labelRepeat.Name = "labelRepeat";
-            this.labelRepeat.Size = new System.Drawing.Size(166, 19);
-            this.labelRepeat.TabIndex = 7;
-            this.labelRepeat.Text = "Repetir playlist ao término:";
+            this.menuMoveBellow.Name = "menuMoveBellow";
+            this.menuMoveBellow.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Down)));
+            this.menuMoveBellow.Size = new System.Drawing.Size(347, 22);
+            this.menuMoveBellow.Text = "Mover para &baixo músicas selecionadas";
+            this.menuMoveBellow.Click += new System.EventHandler(this.menuMoveBellow_Click);
             // 
-            // toggleRepeatPlaylist
+            // menuSwap
             // 
-            this.toggleRepeatPlaylist.AutoSize = true;
-            this.toggleRepeatPlaylist.Location = new System.Drawing.Point(596, 16);
-            this.toggleRepeatPlaylist.Name = "toggleRepeatPlaylist";
-            this.toggleRepeatPlaylist.Size = new System.Drawing.Size(80, 17);
-            this.toggleRepeatPlaylist.TabIndex = 6;
-            this.toggleRepeatPlaylist.Text = "Off";
-            this.toggleRepeatPlaylist.UseSelectable = true;
-            this.toggleRepeatPlaylist.CheckedChanged += new System.EventHandler(this.toggleRepeatPlaylist_CheckedChanged);
+            this.menuSwap.Name = "menuSwap";
+            this.menuSwap.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
+            this.menuSwap.Size = new System.Drawing.Size(347, 22);
+            this.menuSwap.Text = "Trocar de Lugar";
+            this.menuSwap.Click += new System.EventHandler(this.menuSwap_Click);
             // 
-            // labelShuffle
+            // mnuMerge
             // 
-            this.labelShuffle.AutoSize = true;
-            this.labelShuffle.Location = new System.Drawing.Point(238, 14);
-            this.labelShuffle.Name = "labelShuffle";
-            this.labelShuffle.Size = new System.Drawing.Size(48, 19);
-            this.labelShuffle.TabIndex = 5;
-            this.labelShuffle.Text = "Shuffle";
+            this.mnuMerge.Name = "mnuMerge";
+            this.mnuMerge.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D0)));
+            this.mnuMerge.Size = new System.Drawing.Size(347, 22);
+            this.mnuMerge.Text = "&Transformar em Program com Vinhetas";
+            this.mnuMerge.Click += new System.EventHandler(this.mnuMerge_Click);
             // 
-            // toggleShuffle
+            // toolStripSeparator1
             // 
-            this.toggleShuffle.AutoSize = true;
-            this.toggleShuffle.Location = new System.Drawing.Point(292, 16);
-            this.toggleShuffle.Name = "toggleShuffle";
-            this.toggleShuffle.Size = new System.Drawing.Size(80, 17);
-            this.toggleShuffle.TabIndex = 4;
-            this.toggleShuffle.Text = "Off";
-            this.toggleShuffle.UseSelectable = true;
-            this.toggleShuffle.CheckedChanged += new System.EventHandler(this.toggleShuffle_CheckedChanged);
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(344, 6);
             // 
-            // labelIsPlaying
+            // menuGoToCurrent
             // 
-            this.labelIsPlaying.AutoSize = true;
-            this.labelIsPlaying.Location = new System.Drawing.Point(7, 14);
-            this.labelIsPlaying.Name = "labelIsPlaying";
-            this.labelIsPlaying.Size = new System.Drawing.Size(83, 19);
-            this.labelIsPlaying.TabIndex = 3;
-            this.labelIsPlaying.Text = "Tocar Playlist";
+            this.menuGoToCurrent.Name = "menuGoToCurrent";
+            this.menuGoToCurrent.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.menuGoToCurrent.Size = new System.Drawing.Size(347, 22);
+            this.menuGoToCurrent.Text = "Ir para música atual";
+            this.menuGoToCurrent.Click += new System.EventHandler(this.menuGoToCurrent_Click);
             // 
-            // toggleIsPlaying
+            // toolStripSeparator2
             // 
-            this.toggleIsPlaying.AutoSize = true;
-            this.toggleIsPlaying.Location = new System.Drawing.Point(98, 16);
-            this.toggleIsPlaying.Name = "toggleIsPlaying";
-            this.toggleIsPlaying.Size = new System.Drawing.Size(80, 17);
-            this.toggleIsPlaying.TabIndex = 2;
-            this.toggleIsPlaying.Text = "Off";
-            this.toggleIsPlaying.UseSelectable = true;
-            this.toggleIsPlaying.CheckedChanged += new System.EventHandler(this.toggleIsPlaying_CheckedChanged);
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(344, 6);
+            // 
+            // menuPlaySelectedMusic
+            // 
+            this.menuPlaySelectedMusic.Name = "menuPlaySelectedMusic";
+            this.menuPlaySelectedMusic.Size = new System.Drawing.Size(347, 22);
+            this.menuPlaySelectedMusic.Text = "Tocar música selecionada";
+            this.menuPlaySelectedMusic.Click += new System.EventHandler(this.menuPlaySelectedMusic_Click);
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1279, 778);
+            this.ClientSize = new System.Drawing.Size(1325, 778);
             this.Controls.Add(this.tabMain);
             this.Controls.Add(this.panelMusicStatus);
             this.Name = "frmMain";
             this.Style = MetroFramework.MetroColorStyle.Red;
-            this.Text = "BAT Radio by MorcegaoFM";
+            this.Text = "BatRadio by Morcegão FM ($version)";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.frmMain_Load);
             ((System.ComponentModel.ISupportInitialize)(this.styleManager)).EndInit();
             this.panelMusicStatus.ResumeLayout(false);
@@ -993,7 +1011,6 @@
             this.metroPanel1.ResumeLayout(false);
             this.metroPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridPlaylist)).EndInit();
-            this.contextMenuPlaylist.ResumeLayout(false);
             this.panSearch.ResumeLayout(false);
             this.panSearch.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.gridSearch)).EndInit();
@@ -1002,6 +1019,7 @@
             this.tabConfiguration.PerformLayout();
             this.metroPanel2.ResumeLayout(false);
             this.metroPanel2.PerformLayout();
+            this.contextMenuPlaylist.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1048,13 +1066,6 @@
         private System.Windows.Forms.ToolStripMenuItem mnuMerge;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem menuGoToCurrent;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridPlaylistPosition;
-        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistTime;
-        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistFile;
-        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistArtist;
-        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistTitle;
-        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistTotalDuration;
-        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistAlbum;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridSearchFile;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridSearchArtist;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridSearchTitle;
@@ -1069,5 +1080,14 @@
         private MetroFramework.Controls.MetroToggle toggleShuffle;
         private MetroFramework.Controls.MetroLabel labelIsPlaying;
         private MetroFramework.Controls.MetroToggle toggleIsPlaying;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem menuPlaySelectedMusic;
+        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistTime;
+        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistFile;
+        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistArtist;
+        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistTitle;
+        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistTotalDuration;
+        private System.Windows.Forms.DataGridViewTextBoxColumn datagridPlaylistAlbum;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridPlaylistPosition;
     }
 }

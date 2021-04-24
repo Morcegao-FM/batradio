@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -31,7 +32,7 @@ namespace BatRadio.UI
                 BatRadioClient.TimeCalculation(playlist, status);
                 gridPlaylist.DataSource = playlist;
                 gridPlaylist.DataBindingComplete += GridPlaylist_DataBindingComplete;
-
+                this.Text = this.Text.Replace("$version", VersionLabel);
 
                 timerUpdate.Enabled = true;
                 tabMain.SelectTab(tabPlaying);
@@ -69,7 +70,7 @@ namespace BatRadio.UI
             ShowMessage(string.Format("{0} - {1} : [{2}]", status.currentSong.Artist, status.currentSong.Title, status.currentSong.file));
         }
 
-        private void SelectCurrentMusic(int currentIndex = -1)
+        private void SelectCurrentMusic(int currentIndex = -1, bool scroll = false)
         {
             gridPlaylist.ClearSelection();
             if(currentIndex == -1)
@@ -78,7 +79,8 @@ namespace BatRadio.UI
             gridPlaylist.Rows[currentIndex].Cells[0].Selected = true;
             if (currentIndex < 3) currentIndex= 3;
             gridPlaylist.CurrentCell = gridPlaylist.Rows[currentIndex].Cells[0];
-            gridPlaylist.FirstDisplayedScrollingRowIndex = currentIndex -3;
+            if(scroll)
+                gridPlaylist.FirstDisplayedScrollingRowIndex = currentIndex -3;
             
 
         }
@@ -403,6 +405,42 @@ namespace BatRadio.UI
             buttonCurrentMusic_Click_1(sender, e);
         }
 
+        private void menuPlaySelectedMusic_Click(object sender, EventArgs e)
+        {
+            if (gridPlaylist.SelectedRows.Count == 0) return;
+            DataGridViewRow currentRow = gridPlaylist.SelectedRows[0];
+            var position = int.Parse(currentRow.Cells["gridPlayListPosition"].Value.ToString());
+            status = client.Play(position);
+            ShowStatus();
+
+        }
+
+        private void gridPlaylist_MouseClick(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                var rowIndex = gridPlaylist.HitTest(e.X, e.Y).RowIndex;
+                SelectCurrentMusic(rowIndex, false);
+                contextMenuPlaylist.Show(gridPlaylist, e.X+2, e.Y-30);
+            }
+        }
+
+        public string VersionLabel
+        {
+            get
+            {
+                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                {
+                    Version ver = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion;
+                    return string.Format("{0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                }
+                else
+                {
+                    var ver = Assembly.GetExecutingAssembly().GetName().Version;
+                    return string.Format("{0}.{1}.{2}.{3}", ver.Major, ver.Minor, ver.Build, ver.Revision, Assembly.GetEntryAssembly().GetName().Name);
+                }
+            }
+        }
 
     }
 }

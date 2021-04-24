@@ -183,5 +183,13 @@ namespace BatRadio.UI
             return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("move"), parameters));
 
         }
+
+        internal Status Play(int position)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("position", position.ToString());
+            return JsonConvert.DeserializeObject<Status>(PostString(PrepareUrl("play"), parameters));
+
+        }
     }
 }
