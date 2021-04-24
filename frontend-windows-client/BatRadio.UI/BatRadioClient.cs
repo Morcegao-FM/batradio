@@ -12,6 +12,8 @@ namespace BatRadio.UI
     {
         public static HttpClient Client = new HttpClient();
         public static Config RadioConfig = new Config();
+        public event EventHandler StartUpdate;
+        public event EventHandler EndUpdate;
         private string GetString(string URL)
         {
             return this.GetString(URL, new Dictionary<string, string>());
@@ -57,7 +59,8 @@ namespace BatRadio.UI
         }
 
         private string GetString(string URL, Dictionary<string,string> AdditionalHeaders)
-        {                
+        {
+            if (this.StartUpdate != null) this.StartUpdate(this, null);
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.Add("batradio-apikey", RadioConfig.APIKey);
 
@@ -68,6 +71,7 @@ namespace BatRadio.UI
             task.Wait();
             var taskdata = task.Result.Content.ReadAsStringAsync();
             taskdata.Wait();
+            if (this.EndUpdate != null) this.EndUpdate(this, null);
             if (task.Result.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new Exception(JsonConvert.DeserializeObject<Dictionary<string, string>>(taskdata.Result)["message"]); ;
@@ -77,11 +81,12 @@ namespace BatRadio.UI
         }
 
         private string PostString(string URL)
-        {
+        {            
             return this.PostString(URL, new Dictionary<string, string>());
         }
         private string PostString(string URL, Dictionary<string, string> AdditionalHeaders)
         {
+            if (this.StartUpdate != null) this.StartUpdate(this, null);
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.Add("batradio-apikey", RadioConfig.APIKey);
 
@@ -92,10 +97,12 @@ namespace BatRadio.UI
             task.Wait();
             var taskdata = task.Result.Content.ReadAsStringAsync();
             taskdata.Wait();
+            if (this.EndUpdate != null) this.EndUpdate(this, null);
             if (task.Result.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 throw new Exception(JsonConvert.DeserializeObject<Dictionary<string, string>>(taskdata.Result)["message"]); ;
             }
+            
             return taskdata.Result;
 
         }

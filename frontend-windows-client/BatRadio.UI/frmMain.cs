@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MetroFramework.Forms;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
@@ -16,14 +17,21 @@ namespace BatRadio.UI
     {
         private BatRadioClient client = new BatRadioClient();
         Status status = new Status();
-        private  List<StatusSong> playlist { get { return _playlist;  } set { _playlist = value; BatRadioClient.TimeCalculation(_playlist, status); }  }
+        private List<StatusSong> playlist { get { return _playlist; } set { _playlist = value; BatRadioClient.TimeCalculation(_playlist, status); } }
         List<StatusSong> _playlist = new List<StatusSong>();
         List<StatusSong> files = new List<StatusSong>();
         private bool CheckChanging = false;
         private bool selectCurrent = true;
+        private int current_playlist_row = 0;
         public frmMain()
         {
             InitializeComponent();
+            gridSearch.AutoGenerateColumns = false;
+            gridPlaylist.AutoGenerateColumns = false;
+            gridPlaylist.RowPrePaint += GridPlaylist_RowPrePaint;
+            client.StartUpdate += Client_StartUpdate;
+            client.EndUpdate += Client_EndUpdate;
+
             try
             {
                 UpdateDatabaseInformation();
@@ -31,14 +39,10 @@ namespace BatRadio.UI
 
                 BatRadioClient.TimeCalculation(playlist, status);
                 gridPlaylist.DataSource = playlist;
-                gridPlaylist.DataBindingComplete += GridPlaylist_DataBindingComplete;
-                this.Text = this.Text.Replace("$version", VersionLabel);
-
+                gridPlaylist.DataBindingComplete += GridPlaylist_DataBindingComplete;                
                 timerUpdate.Enabled = true;
                 tabMain.SelectTab(tabPlaying);
-
-
-
+                this.Text = this.Text.Replace("$version", VersionLabel);
             }
             catch (Exception err)
             {
@@ -48,9 +52,25 @@ namespace BatRadio.UI
             }
         }
 
+        private void Client_EndUpdate(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.Default;
+        }
+
+        private void Client_StartUpdate(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+        }
+
+        private void GridPlaylist_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e)
+        {
+            current_playlist_row = gridPlaylist.FirstDisplayedScrollingRowIndex;
+            //Console.WriteLine(current_playlist_row);
+        }
+
         private void GridPlaylist_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
         {
-            if(selectCurrent)
+            if (selectCurrent)
                 SelectCurrentMusic();
             selectCurrent = false;
         }
@@ -58,32 +78,42 @@ namespace BatRadio.UI
         private void frmMain_Load(object sender, EventArgs e)
         {
             LoadConfiguration();
-            gridSearch.AutoGenerateColumns = false;
-            gridPlaylist.AutoGenerateColumns = false;
             gridPlaylist.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             gridSearch.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             // or even better, use .DisableResizing. Most time consuming enum is DataGridViewRowHeadersWidthSizeMode.AutoSizeToAllHeaders
 
             // set it to false if not needed
-            gridPlaylist.RowHeadersVisible = false;        
+            gridPlaylist.RowHeadersVisible = false;
 
             ShowMessage(string.Format("{0} - {1} : [{2}]", status.currentSong.Artist, status.currentSong.Title, status.currentSong.file));
         }
 
         private void SelectCurrentMusic(int currentIndex = -1, bool scroll = false)
         {
+            
             gridPlaylist.ClearSelection();
-            if(currentIndex == -1)
+            if (currentIndex == -1) scroll = true;
+            if (currentIndex == -1)
                 currentIndex = playlist.FindIndex(t => t.Pos == status.song);
             gridPlaylist.Rows[currentIndex].Selected = true;
             gridPlaylist.Rows[currentIndex].Cells[0].Selected = true;
-            if (currentIndex < 3) currentIndex= 3;
+            if (currentIndex < 3) currentIndex = 3;
             gridPlaylist.CurrentCell = gridPlaylist.Rows[currentIndex].Cells[0];
-            if(scroll)
-                gridPlaylist.FirstDisplayedScrollingRowIndex = currentIndex -3;
-            
+            if (scroll)
+                gridPlaylist.FirstDisplayedScrollingRowIndex = currentIndex - 3;
+            else
+                gridPlaylist.FirstDisplayedScrollingRowIndex = current_playlist_row;
 
         }
+        private void SelectSearchMusic(int currentIndex)
+        {
+            if (currentIndex == -1) return;
+            gridSearch.ClearSelection();
+            gridSearch.Rows[currentIndex].Selected = true;
+            gridSearch.Rows[currentIndex].Cells[0].Selected = true;
+            gridSearch.CurrentCell = gridSearch.Rows[currentIndex].Cells[0];
+        }
+
 
         private void ShowStatus()
         {
@@ -97,25 +127,25 @@ namespace BatRadio.UI
             toggleShuffle.Checked = status.random == 1;
             toggleRepeatPlaylist.Checked = status.repeat == 1;
             toggleFadeIn.Checked = status.xfade > 0;
-            this.CheckChanging = false;            
+            this.CheckChanging = false;
         }
         private void ShowMessage(string message)
         {
         }
         private void ShowError(string message, string title = "Erro", bool error = true)
         {
-            MetroFramework.MetroMessageBox.Show(this, message, title, MessageBoxButtons.OK, error?MessageBoxIcon.Error:MessageBoxIcon.Warning);
+            MetroFramework.MetroMessageBox.Show(this, message, title, MessageBoxButtons.OK, error ? MessageBoxIcon.Error : MessageBoxIcon.Warning);
         }
 
-        
+
         private void timeUpdate_Tick(object sender, EventArgs e)
         {
-            try 
+            try
             {
                 status = client.GetStatus();
                 ShowStatus();
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 timerUpdate.Enabled = false;
                 ShowError("Falha ao atualizar o status da rádio, por favor, verifique sua conexão com a internet ou se o servidor de streaming está ativo." + Environment.NewLine + error.Message, "Falha ao atualizar Status", false);
@@ -140,7 +170,7 @@ namespace BatRadio.UI
             if (!int.TryParse(textboxServerPort.Text, out port))
                 throw new Exception("A porta do servidor deve ser um valor numérico.");
 
-            if(port < 1024 || port > 65535)
+            if (port < 1024 || port > 65535)
             {
                 throw new Exception("A porta do sevidor deve estar entre 1024 e 65535");
             }
@@ -159,7 +189,7 @@ namespace BatRadio.UI
             timeUpdate_Tick(this, null);
             gridPlaylist.DataSource = playlist;
             tabMain.SelectTab(tabPlaying);
-            
+
         }
         private void buttonConfigurationSave_Click(object sender, EventArgs e)
         {
@@ -169,7 +199,7 @@ namespace BatRadio.UI
                 if (timerUpdate.Enabled == false) timerUpdate.Enabled = true;
                 tabMain.SelectTab(tabPlaying);
             }
-            catch(Exception error)
+            catch (Exception error)
             {
                 MetroFramework.MetroMessageBox.Show(this, error.Message, "Falha ao salvar configurações", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -192,8 +222,8 @@ namespace BatRadio.UI
         private void toggleIsPlaying_CheckedChanged(object sender, EventArgs e)
         {
             if (this.CheckChanging)
-                return;           
-            
+                return;
+
             status = client.PlayOrPause();
             ShowStatus();
         }
@@ -226,7 +256,7 @@ namespace BatRadio.UI
         {
             if (textboxSearch.Text.Length < 3) return;
             var list = files.FindAll(t => { return t.Matches(textboxSearch.Text.Split(' ')); });
-            gridSearch.DataSource = list.OrderBy(t=> t.file).ToList(); 
+            gridSearch.DataSource = list.OrderBy(t => t.file).ToList();
         }
 
 
@@ -241,16 +271,16 @@ namespace BatRadio.UI
 
         private void textboxSearchPlaylist_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if(e.KeyChar == (char)Keys.Enter)
+            if (e.KeyChar == (char)Keys.Enter)
             {
                 var searchValue = textboxSearchPlaylist.Text;
                 var selectedRow = gridPlaylist.SelectedRows[0].Index;
-                var output = playlist.FirstOrDefault(t => t.Matches(searchValue.Split(' ')) && t.Id > selectedRow+1);
-                
+                var output = playlist.FirstOrDefault(t => t.Matches(searchValue.Split(' ')) && t.Id > selectedRow + 1);
+
                 if (output == null)
                     output = playlist.FirstOrDefault(t => t.Matches(searchValue.Split(' ')));
 
-                if (output ==  null) return;
+                if (output == null) return;
 
                 SelectCurrentMusic(output.Pos);
 
@@ -260,7 +290,7 @@ namespace BatRadio.UI
 
         private void trackCurrentMusic_Scroll(object sender, ScrollEventArgs e)
         {
-            if(!CheckChanging)
+            if (!CheckChanging)
             {
                 Console.WriteLine(e.NewValue);
             }
@@ -278,7 +308,7 @@ namespace BatRadio.UI
             List<string> files = new List<string>();
             int position = 0;
 
-            foreach(DataGridViewRow item in gridSearch.SelectedRows)
+            foreach (DataGridViewRow item in gridSearch.SelectedRows)
             {
                 files.Add(item.Cells["gridSearchFile"].Value.ToString());
             }
@@ -286,6 +316,7 @@ namespace BatRadio.UI
                 position = int.Parse(gridPlaylist.SelectedRows[gridPlaylist.SelectedRows.Count - 1].Cells["gridPlaylistPosition"].Value.ToString()) + 1;
 
             playlist = client.AddMusic(files, position);
+            
             gridPlaylist.DataSource = playlist;
             SelectCurrentMusic(position);
         }
@@ -309,7 +340,7 @@ namespace BatRadio.UI
 
         private void buttonAddBellow_Click(object sender, EventArgs e)
         {
-            menuAddBellowPlaylist_Click(sender,e);
+            menuAddBellowPlaylist_Click(sender, e);
         }
 
         private void buttonAddAbove_Click(object sender, EventArgs e)
@@ -320,7 +351,7 @@ namespace BatRadio.UI
         private void menuRemoveMusic_Click(object sender, EventArgs e)
         {
             List<string> files = new List<string>();
-            int position = int.Parse( gridPlaylist.SelectedRows[0].Cells["gridPlaylistPosition"].Value.ToString() );
+            int position = int.Parse(gridPlaylist.SelectedRows[0].Cells["gridPlaylistPosition"].Value.ToString());
             foreach (DataGridViewRow item in gridPlaylist.SelectedRows)
             {
                 files.Add(item.Cells["gridPlaylistPosition"].Value.ToString());
@@ -334,7 +365,7 @@ namespace BatRadio.UI
 
         private void menuMoveAbove_Click(object sender, EventArgs e)
         {
-            if(gridPlaylist.SelectedRows.Count == 0)
+            if (gridPlaylist.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Selecion apenas uma musica para movimentar");
                 return;
@@ -354,7 +385,7 @@ namespace BatRadio.UI
                 return;
             }
             int position = int.Parse(gridPlaylist.SelectedRows[0].Cells["gridPlaylistPosition"].Value.ToString());
-            if (position == playlist.Max(t=>t.Pos)) return;
+            if (position == playlist.Max(t => t.Pos)) return;
             playlist = client.Move(position, position + 1);
             gridPlaylist.DataSource = playlist;
             SelectCurrentMusic(position);
@@ -362,36 +393,36 @@ namespace BatRadio.UI
 
         private void menuSwap_Click(object sender, EventArgs e)
         {
-            if (gridPlaylist.SelectedRows.Count == 0)
+            if (gridPlaylist.SelectedRows.Count < 2)
             {
                 MessageBox.Show("Selecione duas músicas para trocar de lugar");
                 return;
             }
             List<int> values = new List<int>();
-            values.Add( int.Parse(gridPlaylist.SelectedRows[0].Cells["gridPlaylistPosition"].Value.ToString()) );
-            values.Add(int.Parse(gridPlaylist.SelectedRows[1].Cells["gridPlaylistPosition"].Value.ToString()) );
+            values.Add(int.Parse(gridPlaylist.SelectedRows[0].Cells["gridPlaylistPosition"].Value.ToString()));
+            values.Add(int.Parse(gridPlaylist.SelectedRows[1].Cells["gridPlaylistPosition"].Value.ToString()));
             values.Sort();
             client.Move(values[0], values[1]);
-            playlist = client.Move(values[1] -1 , values[0]);
+            playlist = client.Move(values[1] - 1, values[0]);
             gridPlaylist.DataSource = playlist;
             SelectCurrentMusic(values[0]);
         }
 
         private void mnuMerge_Click(object sender, EventArgs e)
         {
-            if(gridPlaylist.SelectedRows.Count  % 2 != 0)
+            if (gridPlaylist.SelectedRows.Count % 2 != 0)
             {
                 MessageBox.Show("Por favor, selecione múltiplos de 2");
             }
             List<int> values = new List<int>();
-            foreach(DataGridViewRow row in gridPlaylist.SelectedRows)
+            foreach (DataGridViewRow row in gridPlaylist.SelectedRows)
             {
-                values.Add( int.Parse(row.Cells["gridPlaylistPosition"].Value.ToString()));
+                values.Add(int.Parse(row.Cells["gridPlaylistPosition"].Value.ToString()));
             }
             values.Sort();
             var initial = values.Count / 2;
             int aux = 1;
-            for(int i = initial; i < values.Count; i++)
+            for (int i = initial; i < values.Count; i++)
             {
                 playlist = client.Move(values[i], values[aux]);
                 aux = aux + 2;
@@ -417,11 +448,10 @@ namespace BatRadio.UI
 
         private void gridPlaylist_MouseClick(object sender, MouseEventArgs e)
         {
-            if(e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && gridPlaylist.SelectedRows.Count < 2)
             {
                 var rowIndex = gridPlaylist.HitTest(e.X, e.Y).RowIndex;
-                SelectCurrentMusic(rowIndex, false);
-                contextMenuPlaylist.Show(gridPlaylist, e.X+2, e.Y-30);
+                SelectCurrentMusic(rowIndex, false);             
             }
         }
 
@@ -442,5 +472,38 @@ namespace BatRadio.UI
             }
         }
 
+        private void metroPanel3_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void menuAddMusicManyTimes_Click(object sender, EventArgs e)
+        {
+            var song = gridSearch.SelectedRows[0].Cells["gridSearchFile"].Value.ToString(); ;
+            frmAddMusicManyTimes addForm = new frmAddMusicManyTimes(song);
+            addForm.FormClosed += AddForm_FormClosed;
+            addForm.Show(this);
+
+        }
+
+        private void AddForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            ((MetroForm)sender).Dispose();
+        }
+
+        private void gridSearch_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right && gridSearch.SelectedRows.Count < 2)
+            {                
+                var rowIndex = gridSearch.HitTest(e.X, e.Y).RowIndex;
+                if (rowIndex == -1) return;
+                SelectSearchMusic(rowIndex);                
+            }
+        }
+
+        private void contextMenuPlaylist_Opening(object sender, CancelEventArgs e)
+        {
+
+        }
     }
 }

@@ -29,7 +29,7 @@
     <PublisherName>André José Guergolet</PublisherName>
     <SuiteName>BatRadio</SuiteName>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -100,6 +100,12 @@
   <ItemGroup>
     <Compile Include="BatRadioClient.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="frmAddMusicManyTimes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAddMusicManyTimes.Designer.cs">
+      <DependentUpon>frmAddMusicManyTimes.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -111,6 +117,9 @@
     <Compile Include="RadioHelper.cs" />
     <Compile Include="StatusSong.cs" />
     <Compile Include="Status.cs" />
+    <EmbeddedResource Include="frmAddMusicManyTimes.resx">
+      <DependentUpon>frmAddMusicManyTimes.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
     </EmbeddedResource>
