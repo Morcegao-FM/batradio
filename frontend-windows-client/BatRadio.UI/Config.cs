@@ -50,6 +50,9 @@ namespace BatRadio.UI
 
         private string GetFileName()
         {
+#if DEBUG
+            return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "batradio.debug.config");
+#endif
             return System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "batradio.config");
         }
     }

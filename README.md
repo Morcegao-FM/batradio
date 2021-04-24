@@ -1,26 +1,28 @@
 # Bat Radio by Morcegão FM
-Costumavamos utilizar o ARIO para preparar a programação da Rádio Morcegao FM (https://www.morcegaofm.com.br/) e ele começou a travar muito nas versões mais recentes do Windows, além de não possuir features que facilitassem a montagem da programação.
+We always used to use ARIO Software to prepare playlists for Morcegao FM radio (http://www.morcegaofm.com.br). ARIO software freezes a lot in newer Windows versions or working with more recent versions of MPD Server.
 
-Depois de quase 5 anos com a idéia de fazer o nosso próprio "ARIO", iniciamos esse projeto. Este projeto serve para gerenciar uma Webradio que utilize versões do MPD e ICECAST 2.
+Morcegão FM team has been working on some ideas to change or create a new software suitable for Web Radios. 
+
+After almost 5 years with the idea of ​​making our own ARIO Software, a client designed for Windows with a backend REST API to future features (like a Web Client), we started this project. This project serves to manage any Web Radio that uses the newer versions of MPD and ICECAST 2.
+
+## BatRadio Server
+## Windows Frontend
+### Version 1.2.0.6 
+- Plays selected music from playlist context menu;
+- Morcegão FM icon used on shortcuts and taskbar;
+
+### Versão 1.2.0.7
+- Change cursor icon while playlist being updated;
+- Playlist grid scrolling improvement;
 
 
 
-
-
-# BatRadio Server
-
-
-
-# Windows Frontend
 Windows 64 bits - https://guergolet-software.s3-sa-east-1.amazonaws.com/morcegaofm/setup.exe 
 
 ### Versão 1.2.0.6
 - Tocar a música selecionado do playlist ao clicar com o botão direito do Mouse.
 - Icone da Morcegão FM no atalho do desktop e Taskbar
 
-### Version 1.2.0.6 
-- Plays selected music from playlist context menu;
-- Morcegão FM icon used on shortcuts and taskbar;
 
 
 
@@ -29,6 +31,3 @@ Windows 64 bits - https://guergolet-software.s3-sa-east-1.amazonaws.com/morcegao
 - A rolagem do grid foi melhorada para não perder a visualização;
 - Correção de bug com as teclas de atalho;
 
-### Versão 1.2.0.7
-- Change cursor icon while playlist being updated;
-- Playlist grid scrolling improvement;

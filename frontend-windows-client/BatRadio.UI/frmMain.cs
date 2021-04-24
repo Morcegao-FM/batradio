@@ -84,8 +84,8 @@ namespace BatRadio.UI
 
             // set it to false if not needed
             gridPlaylist.RowHeadersVisible = false;
-
-            ShowMessage(string.Format("{0} - {1} : [{2}]", status.currentSong.Artist, status.currentSong.Title, status.currentSong.file));
+            if(status.currentSong != null)
+                ShowMessage(string.Format("{0} - {1} : [{2}]", status.currentSong.Artist, status.currentSong.Title, status.currentSong.file));
         }
 
         private void SelectCurrentMusic(int currentIndex = -1, bool scroll = false)
@@ -441,6 +441,18 @@ namespace BatRadio.UI
             if (gridPlaylist.SelectedRows.Count == 0) return;
             DataGridViewRow currentRow = gridPlaylist.SelectedRows[0];
             var position = int.Parse(currentRow.Cells["gridPlayListPosition"].Value.ToString());
+            var filename = currentRow.Cells["datagridPlaylistFile"].Value.ToString();
+
+            DialogResult result = MetroFramework.MetroMessageBox.Show(this, "Você tem certeza de que quer tocar " + filename + "?", "TEM CERTEZA?", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                result = MetroFramework.MetroMessageBox.Show(this, "Você vai parar de tocar a música " + status.currentSong.file + ", tem CERTEZA???????????", "TEM CERTEZA", MessageBoxButtons.YesNo);
+                if (result == DialogResult.No)
+                    return;
+            }
+            else
+                return;
+
             status = client.Play(position);
             ShowStatus();
 
