@@ -2,20 +2,26 @@ var mpd = require("mpd");
 var fs = require("fs");
 var logger = require("log4js").getLogger();
 var express = require("express");
+var timeout = require('connect-timeout');
 const { exception } = require("console");
 var app = express();
+app.use(timeout('30s'));
+app.use(haltOnTimedout);
 
 var config = JSON.parse(fs.readFileSync("config.json"));
 
+function haltOnTimedout (req, res, next) {
+  if (!req.timedout) next();  
+}
 // Memory database
 var currentPlaylist = Array();
 var currentFiles = Array();
 var currentStatus;
 var busy = false;
+var webserverstarted = false;
 
 logger.level = config.log.minLevel;
-logger.info(`Starting application - LOGLEVEL ${config.log.minLevel}`);
-logger.error('teste');
+logger.info(`Starting application - LOGLEVEL ${config.log.minLevel} Version 1.5`);
 logger.debug(
   `Connecting to MPD - SERVER=${config.mpd.server} PORT=${config.mpd.port}`
 );
@@ -34,13 +40,30 @@ var start = async function () {
   await getStatus();
   setInterval(Ping, 59000);
   logger.info("Inicializando o servidor WEB. PORT ", config.webserver.port);
-  app.listen(config.webserver.port);
+  if(!webserverstarted)
+    app.listen(config.webserver.port);
 
+  webserverstarted = true;
   logger.trace("END main.start()");
 };
 
+function nullfunc()
+{
+
+}
+
 var error = function (err) {
   logger.error(`MPD error - ${err}`);
+  client.on('error', nullfunc);
+  client.on('ready', nullfunc);
+  client = mpd.connect({
+    host: config.mpd.server,
+    port: config.mpd.port,
+    password: config.mpd.password,
+  });
+  client.on("error", error);
+  client.on("ready", start);  
+  
 };
 
 function promisedGetPlaylist() {
@@ -140,7 +163,6 @@ async function getFiles(currentFolder) {
 
 async function getStatus() {
   logger.info("BEGIN getStatus");
-  isBusy();
   await promisedCommand('status',[]).then((status) => {
     busy = false;
     var currentPos = status.song;
@@ -162,7 +184,7 @@ client.on("error", error);
 client.on("ready", start);
 
 function isBusy() {
-  if (busy) throw new exception("MPD is busy, try again later");
+  if (busy) throw "MPD is busy, try again later";
   busy = true;
 }
 
@@ -183,7 +205,7 @@ function checkAPIKey(req, res) {
 
 async function Ping()
 {
-  await promisedCommand('ping',[]);
+  await promisedCommand('ping',[]).catch();
 }
 
 
