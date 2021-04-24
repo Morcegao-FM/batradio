@@ -212,6 +212,22 @@ app.post('/playorpause', async (req,res) =>
 });
 
 
+app.post('/play', async (req,res) =>
+{
+  logger.debug('/playorpause required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  position = req.header('position');
+  res.type("application/json");
+  logger.debug("/playorpause will be sent");
+  isBusy();  
+  await promisedCommand('play', [position]).then((data) => {busy = false;} )  
+  await getStatus();
+  res.status(200).send(currentStatus).end();
+});
+
 
 app.post('/addtoplaylist', async (req,res) =>
 {
