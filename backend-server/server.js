@@ -100,9 +100,9 @@ function promisedGetFiles(folder) {
         reject(err);
         return;
       }
-      newFiles = mpd.parseArrayMessage(msg);
+      newFiles = mpd.parseListArrayMessage(msg);
       newFiles.forEach((t) => {
-        t.folder = folder + (t.directory ? t.directory : t.file);
+        t.folder = (t.directory ? t.directory : t.file);
         currentFiles.push(t);
       });
       resolve();
@@ -153,10 +153,11 @@ async function getFiles(currentFolder) {
     for (i = 0; i < currentFiles.length; i++) {
       if (currentFiles[i].directory) {        
         await promisedGetFiles(currentFiles[i].folder).then(() => {
-          busy = false;
+          
         });
       }
     }
+    busy = false;
   });
   logger.info("END getFiles");
 }

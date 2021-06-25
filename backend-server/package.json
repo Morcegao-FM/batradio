@@ -7,7 +7,7 @@
     "connect-timeout": "^1.9.0",
     "express": "^4.17.1",
     "log4js": "^6.3.0",
-    "mpd": "git+https://github.com/drhideg/mpd.js.git"
+    "mpd": "git+https://github.com/Morcegao-FM/mpd.js.git"
   },
   "devDependencies": {},
   "scripts": {
