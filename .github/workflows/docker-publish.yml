@@ -1,0 +1,53 @@
+name: Docker
+
+on:
+  push:
+    # Publish `main` as Docker `latest` image.
+    branches:
+      - main
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME: image
+
+jobs:
+  # Run tests.
+  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+     
+
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  push:
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: build and push to dockerhub and initiate deploment
+      # You may pin to the exact commit or the version.
+      # uses: yokiworks/deploy-github-action@44c0b2889cb2a601c2ccf9ec552b25b435aa11bb
+        uses: yokiworks/deploy-github-action@1.0.10
+        with:
+          # The docker container image name
+          image-name: morcegaofm/batradio
+          # The dockerfile used by the docker build command
+          docker-file: /backend-server/Dockerfile
+          # Dockerhub username
+          dockerhub-username: guergolet
+          # Dockerhub password
+          dockerhub-password: 61da5a85-5af0-435f-b507-b6bd14c43dd5
