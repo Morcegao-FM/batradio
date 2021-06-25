@@ -409,7 +409,7 @@ app.get("/list", async (req, res) => {
       res.status(500).send({ message: err }).end()
     );
   if (type != "directory" && type != "file" && type != "playlist") {
-    logger.catch("/list type not informed type=", type);
+    logger.error("/list type not informed type=", type);
     res
       .status(500)
       .send("Invalid type " + type)
