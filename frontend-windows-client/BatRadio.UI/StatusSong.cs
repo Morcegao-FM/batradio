@@ -6,6 +6,17 @@ using System.Threading.Tasks;
 
 namespace BatRadio.UI
 {
+    class PlaylistList
+    {
+        [Newtonsoft.Json.JsonProperty(propertyName: "Last-Modified")]
+        public DateTime LastModified { get; set; }
+        public string playlist { get; set; }
+
+        public override string ToString()
+        {
+            return playlist;
+        }
+    }
     class StatusSong
     {
         public string file { get; set; }        
