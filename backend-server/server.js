@@ -21,7 +21,7 @@ var busy = false;
 var webserverstarted = false;
 
 logger.level = config.log.minLevel;
-logger.info(`Starting application - LOGLEVEL ${config.log.minLevel} Version 1.5`);
+logger.info(`Starting application - LOGLEVEL ${config.log.minLevel} Version 1.9`);
 logger.debug(
   `Connecting to MPD - SERVER=${config.mpd.server} PORT=${config.mpd.port}`
 );
@@ -449,6 +449,39 @@ app.post('/loadplaylist', async (req,res) =>
   await promisedCommand('clear', []).then(async(data) => {logger.debug(data); logger.info(`Clear before load ${playlistName}`)} );
 
   await promisedCommand('load', [playlistName]).then(async(data) => {logger.debug(data); logger.info(`Playlist loaded ${playlistName}`)} );
+
+  await getPlaylist();
+  return res.status(200).send(currentPlaylist).end();
+});
+
+
+app.post('/saveplaylist', async (req,res) =>
+{
+  logger.info('/loadplaylist required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  playlistName = req.header("name");
+
+  await promisedCommand('rm', [playlistName]).then(async(data) => {logger.debug(data); logger.info(`Playlist loaded ${playlistName}`)} ).catch( async(e) =>{ logger.info("Playlist nova")});
+  await promisedCommand('save', [playlistName]).then(async(data) => {logger.debug(data); logger.info(`Playlist loaded ${playlistName}`)} );
+
+  await getPlaylist();
+  return res.status(200).send(currentPlaylist).end();
+});
+
+
+app.post('/removeplaylist', async (req,res) =>
+{
+  logger.info('/loadplaylist required');
+  if(!checkAPIKey(req,res))
+  {
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  }    
+  playlistName = req.header("name");
+
+  await promisedCommand('rm', [playlistName]).then(async(data) => {logger.debug(data); logger.info(`Playlist loaded ${playlistName}`)} );
 
   await getPlaylist();
   return res.status(200).send(currentPlaylist).end();
