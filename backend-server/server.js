@@ -215,7 +215,9 @@ function checkAPIKey(req, res) {
 
 async function Ping()
 {
+  logger.info('Starting  ping');
   await promisedCommand('ping',[]).catch();
+  logger.info('Ending ping')
 }
 
 
