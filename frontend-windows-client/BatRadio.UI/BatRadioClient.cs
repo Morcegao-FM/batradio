@@ -80,30 +80,42 @@ namespace BatRadio.UI
             
         }
 
-        private string PostString(string URL)
+        private async Task<string> PostString(string URL)
         {            
-            return this.PostString(URL, new Dictionary<string, string>());
+            return await this.PostString(URL, new Dictionary<string, string>());
         }
-        private string PostString(string URL, Dictionary<string, string> AdditionalHeaders)
+        private async Task<string> PostString(string URL, Dictionary<string, string> AdditionalHeaders)
         {
+            try { 
             if (this.StartUpdate != null) this.StartUpdate(this, null);
             Client.DefaultRequestHeaders.Clear();
             Client.DefaultRequestHeaders.Add("batradio-apikey", RadioConfig.APIKey);
-
+            
             foreach (KeyValuePair<string, string> item in AdditionalHeaders)
                 Client.DefaultRequestHeaders.Add(item.Key, item.Value);
 
-            var task = Client.PostAsync(new Uri(URL), null);
-            task.Wait();
-            var taskdata = task.Result.Content.ReadAsStringAsync();
-            taskdata.Wait();
+            var result = await Client.PostAsync(new Uri(URL), null).ConfigureAwait(false);
+
+            
+            var taskdata = await result.Content.ReadAsStringAsync().ConfigureAwait(false);
+            
             if (this.EndUpdate != null) this.EndUpdate(this, null);
-            if (task.Result.StatusCode != System.Net.HttpStatusCode.OK)
+            if (result.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                throw new Exception(JsonConvert.DeserializeObject<Dictionary<string, string>>(taskdata.Result)["message"]); ;
+                throw new Exception(JsonConvert.DeserializeObject<Dictionary<string, string>>(taskdata)["message"]); ;
             }
             
-            return taskdata.Result;
+            return taskdata;
+            }
+           catch(AggregateException agg)
+            {
+                throw new Exception(agg.InnerException.Message);
+            }
+            catch (Exception error)
+            {
+                throw new Exception(error.Message);
+            }
+
 
         }
 
@@ -121,14 +133,14 @@ namespace BatRadio.UI
 
         public Status PlayOrPause()
         {
-            var status = PostString(PrepareUrl("playorpause"));
+            var status = PostString(PrepareUrl("playorpause")).Result;
             return JsonConvert.DeserializeObject<Status>(status);
         }
 
         public Status FadeIn()
         {
-            var status = PostString(PrepareUrl("fadein"));
-            return JsonConvert.DeserializeObject<Status>(status);
+            var status = PostString(PrepareUrl("fadein")).Result;
+            return JsonConvert.DeserializeObject<Status>(status) ;
         }
 
 
@@ -136,10 +148,18 @@ namespace BatRadio.UI
         {
             var parameters = new Dictionary<string, string>();
             parameters.Add("update", updateDatabase?"true":"false");
-            var status = PostString(PrepareUrl("playlist"), parameters);
+            var status = PostString(PrepareUrl("playlist"), parameters).Result;
             return JsonConvert.DeserializeObject<List<StatusSong>>(status);
         }
 
+        public List<PlaylistList> GetPlayListList(bool updateDatabase = false)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("update", updateDatabase ? "true" : "false");
+            parameters.Add("type", "playlist");
+            var status = GetString(PrepareUrl("list"), parameters);
+            return JsonConvert.DeserializeObject<List<PlaylistList>>(status);
+        }
 
         public List<StatusSong> GetSongs(bool updateDatabase = false)
         {
@@ -153,14 +173,14 @@ namespace BatRadio.UI
 
         internal Status Repeat()
         {
-            var status = PostString(PrepareUrl("repeat"));
+            var status = PostString(PrepareUrl("repeat")).Result;
             return JsonConvert.DeserializeObject<Status>(status);
 
         }
 
         internal Status Shuffle()
         {
-            var status = PostString(PrepareUrl("shuffle"));
+            var status = PostString(PrepareUrl("shuffle")).Result;
             return JsonConvert.DeserializeObject<Status>(status);
 
         }
@@ -168,10 +188,17 @@ namespace BatRadio.UI
         internal List<StatusSong> AddMusic(List<string> files, int position)
         {
             var parameters = new Dictionary<string, string>();
-            parameters.Add("files",  JsonConvert.SerializeObject(files));
+            parameters.Add("files", JsonConvert.SerializeObject(files));
             parameters.Add("position", position.ToString());
 
-            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("addtoplaylist"), parameters));
+            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("addtoplaylist"), parameters).Result);
+        }
+        internal List<StatusSong> LoadPlaylist(string Name)
+        {
+            var parameters = new Dictionary<string, string>();
+            parameters.Add("name", Name );
+
+            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("loadplaylist"), parameters).Result);
         }
 
         public List<StatusSong> RemoveMusic(List<string> files)
@@ -179,7 +206,7 @@ namespace BatRadio.UI
             var parameters = new Dictionary<string, string>();
             parameters.Add("files", JsonConvert.SerializeObject(files));            
 
-            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("delete"), parameters));
+            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("delete"), parameters).Result);
         }
 
         public List<StatusSong> Move(int currentPos, int newPos)
@@ -187,7 +214,7 @@ namespace BatRadio.UI
             var parameters = new Dictionary<string, string>();
             parameters.Add("from-pos", currentPos.ToString());
             parameters.Add("to-pos", newPos.ToString());
-            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("move"), parameters));
+            return JsonConvert.DeserializeObject<List<StatusSong>>(PostString(PrepareUrl("move"), parameters).Result);
 
         }
 
@@ -195,7 +222,7 @@ namespace BatRadio.UI
         {
             var parameters = new Dictionary<string, string>();
             parameters.Add("position", position.ToString());
-            return JsonConvert.DeserializeObject<Status>(PostString(PrepareUrl("play"), parameters));
+            return JsonConvert.DeserializeObject<Status>(PostString(PrepareUrl("play"), parameters).Result);
 
         }
     }
