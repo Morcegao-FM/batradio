@@ -122,6 +122,15 @@ function promisedCommand(command, params)
     client.sendCommand(mpd.cmd(command, params), (err, msg) => {
       logger.debug(`MPDCOMMAND ${command} sent`);
       if (err) {
+        if(err.indexOf('ServiceUnavailableError'))
+        {
+          console.warn("Conexão caiu, tentando reconectar");
+          client = mpd.connect({
+            host: config.mpd.server,
+            port: config.mpd.port,
+            password: config.mpd.password,
+          });
+        }
         reject(err);
         logger.debug(`MPDCOMMAND ${error} sent`);
         return;
@@ -398,6 +407,43 @@ app.post("/files", async (req, res) => {
   res.type("application/json");
   res.status(200).send(currentFiles).end();
 });
+
+app.post("/save", async(req,res) => {
+    playlistName = req.header("name");
+    logger.info(`Salvando playlist ${playlistName}`);
+    if (!checkAPIKey(req, res))
+      return res.status("403").send({ message: "Invalid API Key " }).end();
+    await promisedCommand("rm", [playlistName] ).catch((err) => {});
+    await promisedCommand("save", [playlistName] );
+    await getFiles();
+    res.status(200).send(currentStatus);
+}
+
+);
+
+
+app.post("/rm", async(req,res) => {
+  playlistName = req.header("name");
+  logger.info(`Salvando playlist ${playlistName}`);
+  if (!checkAPIKey(req, res))
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  await promisedCommand("rm", [playlistName] ).catch((err) => {});  
+  await getFiles();
+  res.status(200).send(currentStatus);
+}
+
+);
+
+app.post("/load", async(req,res) => {
+  playlistName = req.header("name");
+  logger.info(`Salvando playlist ${playlistName}`);
+  if (!checkAPIKey(req, res))
+    return res.status("403").send({ message: "Invalid API Key " }).end();
+  await promisedCommand("load", [playlistName] ).catch((err) => { res.status(500).send({msg: `Não foi possível carregar a playlist ${playlistName}`})} );    
+  res.status(200).send(currentStatus);
+}
+
+);
 
 app.get("/list", async (req, res) => {
   updateFiles = req.header("update") == "true";
