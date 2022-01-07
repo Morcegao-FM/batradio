@@ -4,6 +4,7 @@ var logger = require("log4js").getLogger();
 var express = require("express");
 var timeout = require('connect-timeout');
 const { exception } = require("console");
+const { timingSafeEqual } = require("crypto");
 var app = express();
 app.use(timeout('30s'));
 app.use(haltOnTimedout);
@@ -216,7 +217,7 @@ function checkAPIKey(req, res) {
 async function Ping()
 {
   logger.info('Starting  ping');
-  await promisedCommand('ping',[]).catch();
+  await promisedCommand('ping',[]).catch( () => { this.error( 'Fail ping '); } );
   logger.info('Ending ping')
 }
 
