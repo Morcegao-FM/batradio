@@ -22,7 +22,7 @@ var busy = false;
 var webserverstarted = false;
 
 logger.level = config.log.minLevel;
-logger.info(`Starting application - LOGLEVEL ${config.log.minLevel} Version 1.9`);
+logger.info(`Starting application - LOGLEVEL ${config.log.minLevel} Version 1.9.2`);
 logger.debug(
   `Connecting to MPD - SERVER=${config.mpd.server} PORT=${config.mpd.port}`
 );
