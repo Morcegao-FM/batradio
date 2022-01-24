@@ -123,7 +123,7 @@ function promisedCommand(command, params)
     client.sendCommand(mpd.cmd(command, params), (err, msg) => {
       logger.debug(`MPDCOMMAND ${command} sent`);
       if (err) {
-        if(err.indexOf('ServiceUnavailableError'))
+        if(err.indexOf && err.indexOf('ServiceUnavailableError'))
         {
           console.warn("Conexão caiu, tentando reconectar");
           client = mpd.connect({
@@ -132,6 +132,7 @@ function promisedCommand(command, params)
             password: config.mpd.password,
           });
         }
+        logger.error(err);
         reject(err);
         logger.debug(`MPDCOMMAND ${error} sent`);
         return;
