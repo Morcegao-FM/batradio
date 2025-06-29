@@ -9,9 +9,12 @@
     "log4js": "^6.4.1",
     "mpd": "git+https://github.com/Morcegao-FM/mpd.js.git"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC"
