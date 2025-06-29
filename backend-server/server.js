@@ -327,8 +327,8 @@ app.post('/repeat', async (req,res) =>
   logger.debug("/repeat will be sent");
   await getStatus();
   var command = '1';
-  if(currentStatus.state == '1')
-    command = '0'  
+  if(currentStatus.repeat == '1')
+    command = '0'
   isBusy();
   await promisedCommand('repeat', [command]).then((data) => {busy = false;} )  
   await getStatus();
