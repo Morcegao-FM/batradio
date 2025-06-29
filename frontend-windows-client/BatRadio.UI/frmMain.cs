@@ -174,7 +174,7 @@ namespace BatRadio.UI
 
             if (port < 1024 || port > 65535)
             {
-                throw new Exception("A porta do sevidor deve estar entre 1024 e 65535");
+                throw new Exception("A porta do servidor deve estar entre 1024 e 65535");
             }
             BatRadioClient.RadioConfig.Server = textboxServerAddress.Text;
             BatRadioClient.RadioConfig.Port = port;
