@@ -205,7 +205,7 @@ func TestBusyIsRetried(t *testing.T) {
 	var calls int
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls++
-		if calls < 3 {
+		if calls < 2 {
 			w.WriteHeader(500)
 			w.Write([]byte(`{"message":"MPD is busy, try again later"}`))
 			return
@@ -219,7 +219,7 @@ func TestBusyIsRetried(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected retry to succeed, got %v", err)
 	}
-	if st.State != "play" || calls != 3 {
+	if st.State != "play" || calls != 2 {
 		t.Fatalf("state=%q calls=%d", st.State, calls)
 	}
 }
@@ -239,8 +239,8 @@ func TestBusyGivesUpAfterRetries(t *testing.T) {
 
 	c := New(srv.URL, testKey)
 	_, err := c.GetStatus(context.Background())
-	if !errors.Is(err, ErrNodeUnavailable) {
-		t.Fatalf("expected ErrNodeUnavailable, got %v", err)
+	if !errors.Is(err, ErrNodeBusy) {
+		t.Fatalf("expected ErrNodeBusy, got %v", err)
 	}
 	if calls != busyRetries+1 {
 		t.Fatalf("calls=%d want %d", calls, busyRetries+1)

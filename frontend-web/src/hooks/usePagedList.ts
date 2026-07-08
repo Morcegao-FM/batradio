@@ -57,5 +57,11 @@ export function usePagedList<T>(
     itemAt,
     firstLoaded,
     isFetching: results.some((r) => r.isFetching),
+    // erro atual OU da tentativa em andamento (failureReason existe enquanto
+    // o React Query re-tenta a cada 3s em 502/503)
+    error:
+      results.find((r) => r.error)?.error ??
+      results.find((r) => r.failureReason)?.failureReason ??
+      undefined,
   }
 }

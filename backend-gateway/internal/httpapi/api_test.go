@@ -271,6 +271,47 @@ func TestNodeDownIs502(t *testing.T) {
 	}
 }
 
+func TestLibraryBeforeFirstRefreshIs503(t *testing.T) {
+	_, srv := newFakeNode(t)
+	s := newTestServer(t, srv.URL)
+	rec := httptest.NewRecorder()
+	s.Routes(nil).ServeHTTP(rec, authedReq("GET", "/api/library", ""))
+	if rec.Code != 503 {
+		t.Fatalf("code=%d body=%s", rec.Code, rec.Body.String())
+	}
+	// depois do refresh, responde normal
+	doJSON[map[string]any](t, s, authedReq("POST", "/api/library/refresh", ""), 200)
+	rec = httptest.NewRecorder()
+	s.Routes(nil).ServeHTTP(rec, authedReq("GET", "/api/library", ""))
+	if rec.Code != 200 {
+		t.Fatalf("after refresh: code=%d", rec.Code)
+	}
+}
+
+func TestNodeBusyIs503(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(500)
+		w.Write([]byte(`{"message":"MPD is busy, try again later"}`))
+	}))
+	t.Cleanup(srv.Close)
+	s := newTestServer(t, srv.URL)
+	rec := httptest.NewRecorder()
+	s.Routes(nil).ServeHTTP(rec, authedReq("GET", "/api/status", ""))
+	if rec.Code != 503 {
+		t.Fatalf("code=%d body=%s", rec.Code, rec.Body.String())
+	}
+	var e struct {
+		Error struct{ Code string } `json:"error"`
+	}
+	json.Unmarshal(rec.Body.Bytes(), &e)
+	if e.Error.Code != "node_busy" {
+		t.Fatalf("error code=%q", e.Error.Code)
+	}
+	if rec.Header().Get("Retry-After") != "3" {
+		t.Errorf("Retry-After=%q", rec.Header().Get("Retry-After"))
+	}
+}
+
 func TestSSEEmitsStatusAndPlaylist(t *testing.T) {
 	_, srv := newFakeNode(t)
 	s := newTestServer(t, srv.URL)

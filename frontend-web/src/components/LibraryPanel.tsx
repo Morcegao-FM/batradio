@@ -5,6 +5,7 @@ import type { Page, Song } from '../lib/types'
 import { formatDuration } from '../lib/format'
 import { useDebounced, usePagedList, type VisibleRange } from '../hooks/usePagedList'
 import GenreChip from './GenreChip'
+import ListState from './ListState'
 import styles from './Panel.module.css'
 
 const ROW_HEIGHT = 56
@@ -26,7 +27,7 @@ export default function LibraryPanel({
   const q = useDebounced(query)
   const [range, setRange] = useState<VisibleRange>({ start: 0, end: 40 })
 
-  const { total, itemAt, isFetching } = usePagedList<Song>(
+  const { total, itemAt, isFetching, error } = usePagedList<Song>(
     ['library', q],
     (offset, limit) =>
       api<Page<Song>>(
@@ -80,6 +81,9 @@ export default function LibraryPanel({
       </div>
 
       <div ref={parentRef} className={styles.list}>
+        {total === 0 && (
+          <ListState error={error} isFetching={isFetching} emptyMessage="Nenhuma faixa encontrada" />
+        )}
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {virtualizer.getVirtualItems().map((row) => {
             const song = itemAt(row.index)

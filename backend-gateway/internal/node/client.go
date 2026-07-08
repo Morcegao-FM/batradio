@@ -19,6 +19,10 @@ import (
 // ErrNodeUnavailable indica falha de rede ou resposta não-200 do Node.
 var ErrNodeUnavailable = errors.New("backend da rádio indisponível")
 
+// ErrNodeBusy indica a trava global do Node ("MPD is busy"), tipicamente
+// durante o scan do acervo. É transitório: o cliente HTTP deve tentar de novo.
+var ErrNodeBusy = errors.New("backend da rádio ocupado")
+
 type Client struct {
 	baseURL string
 	apiKey  string
@@ -34,11 +38,13 @@ func New(baseURL, apiKey string) *Client {
 	}
 }
 
-// busyRetries e busyBackoff controlam as novas tentativas quando o Node
-// responde "MPD is busy" (trava global dele durante scans do acervo/fila).
+// Uma única retry rápida para absorver "busy" momentâneo; se persistir, o
+// erro volta imediatamente como ErrNodeBusy (503) e o FRONTEND fica
+// responsável por tentar de novo mostrando estado de carregamento — segurar a
+// requisição aqui deixaria a interface travada.
 var (
-	busyRetries = 4
-	busyBackoff = 700 * time.Millisecond
+	busyRetries = 1
+	busyBackoff = 500 * time.Millisecond
 )
 
 func (c *Client) do(ctx context.Context, method, path string, headers map[string]string) ([]byte, error) {
@@ -87,7 +93,11 @@ func (c *Client) doOnce(ctx context.Context, method, path string, headers map[st
 			msg = e.Message
 		}
 		busy = strings.Contains(strings.ToLower(msg), "busy")
-		return nil, busy, fmt.Errorf("%w: %s (HTTP %d)", ErrNodeUnavailable, msg, resp.StatusCode)
+		base := ErrNodeUnavailable
+		if busy {
+			base = ErrNodeBusy
+		}
+		return nil, busy, fmt.Errorf("%w: %s (HTTP %d)", base, msg, resp.StatusCode)
 	}
 	return body, false, nil
 }

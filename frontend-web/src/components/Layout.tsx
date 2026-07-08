@@ -4,7 +4,7 @@ import HeaderBar from './HeaderBar'
 import PlayerBar from './PlayerBar'
 import { useRadioEvents } from '../hooks/useRadioEvents'
 import { useStatus } from '../hooks/useStatus'
-import { ApiError } from '../lib/api'
+import { apiErrorStatus } from '../lib/api'
 import styles from './Layout.module.css'
 
 export default function Layout({
@@ -18,18 +18,21 @@ export default function Layout({
 }) {
   const { connected } = useRadioEvents()
   const { error } = useStatus()
-  const nodeDown = error instanceof ApiError && error.status === 502
+  const nodeDown = apiErrorStatus(error) === 502
+  const nodeBusy = apiErrorStatus(error) === 503
 
   return (
     <div className={styles.app}>
       <Sidebar />
       <div className={styles.main}>
         <HeaderBar title={title} subtitle={subtitle} />
-        {(nodeDown || !connected) && (
+        {(nodeDown || nodeBusy || !connected) && (
           <div className={styles.banner} role="alert">
             {nodeDown
               ? 'Servidor da rádio inacessível. Verifique se o servidor de streaming está ativo.'
-              : 'Reconectando ao gateway…'}
+              : nodeBusy
+                ? 'Servidor da rádio ocupado — tentando novamente…'
+                : 'Reconectando ao gateway…'}
           </div>
         )}
         <main className={styles.content}>{children}</main>

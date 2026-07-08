@@ -106,13 +106,19 @@ func writeErr(w http.ResponseWriter, status int, code, message string) {
 	})
 }
 
-// writeNodeErr mapeia erros do cliente Node para respostas HTTP.
+// writeNodeErr mapeia erros do cliente Node para respostas HTTP. "Busy" é
+// transitório: responde 503 rápido para o frontend mostrar loading e tentar
+// de novo, em vez de segurar a requisição.
 func writeNodeErr(w http.ResponseWriter, err error) {
-	if errors.Is(err, node.ErrNodeUnavailable) {
+	switch {
+	case errors.Is(err, node.ErrNodeBusy):
+		w.Header().Set("Retry-After", "3")
+		writeErr(w, http.StatusServiceUnavailable, "node_busy", "Servidor da rádio ocupado, tente novamente em instantes.")
+	case errors.Is(err, node.ErrNodeUnavailable):
 		writeErr(w, http.StatusBadGateway, "node_unavailable", err.Error())
-		return
+	default:
+		writeErr(w, http.StatusInternalServerError, "internal", err.Error())
 	}
-	writeErr(w, http.StatusInternalServerError, "internal", err.Error())
 }
 
 func decodeBody(w http.ResponseWriter, r *http.Request, dst any) bool {
@@ -188,6 +194,14 @@ func (s *Server) handleStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleLibrary(w http.ResponseWriter, r *http.Request) {
+	// Antes do primeiro refresh o índice está vazio: um 200 com total 0 seria
+	// cacheado pelo frontend como sucesso. Responde "ocupado" para ele
+	// continuar tentando até o acervo ficar pronto.
+	if _, refreshedAt := s.lib.Stats(); refreshedAt.IsZero() {
+		w.Header().Set("Retry-After", "3")
+		writeErr(w, http.StatusServiceUnavailable, "node_busy", "Acervo ainda sendo indexado, tente novamente em instantes.")
+		return
+	}
 	q, offset, limit := pageParams(r)
 	items, total := s.lib.Search(q, offset, limit)
 	if limit <= 0 {

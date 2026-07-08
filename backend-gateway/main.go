@@ -64,11 +64,11 @@ func main() {
 				log.Printf("acervo indexado: %d faixas", len(songs))
 				return
 			}
-			log.Printf("acervo indisponível (%v), tentando de novo em 30s", err)
+			log.Printf("acervo indisponível (%v), tentando de novo em 5s", err)
 			select {
 			case <-ctx.Done():
 				return
-			case <-time.After(30 * time.Second):
+			case <-time.After(5 * time.Second):
 			}
 		}
 	}()

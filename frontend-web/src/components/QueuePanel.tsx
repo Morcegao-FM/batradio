@@ -8,6 +8,7 @@ import { useDebounced, usePagedList, type VisibleRange } from '../hooks/usePaged
 import { useStatus } from '../hooks/useStatus'
 import GenreChip from './GenreChip'
 import ConfirmDialog from './ConfirmDialog'
+import ListState from './ListState'
 import styles from './Panel.module.css'
 
 const ROW_HEIGHT = 56
@@ -25,7 +26,7 @@ export default function QueuePanel({
   const { status } = useStatus()
   const queryClient = useQueryClient()
 
-  const { total, itemAt, firstLoaded } = usePagedList<QueueItem>(
+  const { total, itemAt, firstLoaded, isFetching, error } = usePagedList<QueueItem>(
     ['playlist', q],
     (offset, limit) =>
       api<QueuePage>(
@@ -103,6 +104,9 @@ export default function QueuePanel({
       </div>
 
       <div ref={parentRef} className={styles.list}>
+        {total === 0 && (
+          <ListState error={error} isFetching={isFetching} emptyMessage="Fila vazia" />
+        )}
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {virtualizer.getVirtualItems().map((row) => {
             const item = itemAt(row.index)
