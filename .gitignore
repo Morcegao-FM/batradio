@@ -485,3 +485,8 @@ FodyWeavers.xsd
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,dotnetcore
 
 publish_deploy.bat
+
+# BatRadio Web
+backend-gateway/web/dist/*
+!backend-gateway/web/dist/.gitkeep
+frontend-web/node_modules/
