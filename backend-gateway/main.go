@@ -25,6 +25,19 @@ import (
 )
 
 func main() {
+	// Fora do Docker, carrega o .env do diretório atual ou da raiz do repo
+	// (variáveis já exportadas no ambiente têm precedência).
+	for _, path := range []string{".env", "../.env"} {
+		loaded, err := config.LoadDotEnv(path)
+		if err != nil {
+			log.Fatalf("falha ao ler %s: %v", path, err)
+		}
+		if loaded {
+			log.Printf("variáveis carregadas de %s", path)
+			break
+		}
+	}
+
 	cfg, err := config.Load(os.Getenv)
 	if err != nil {
 		log.Fatalf("configuração inválida: %v", err)

@@ -60,6 +60,8 @@ cd backend-gateway
 PORT=8090 NODE_BACKEND_URL=http://127.0.0.1:9320 NODE_API_KEY=dev \
 DEV_MODE=true ALLOWED_EMAILS=aguergolet@gmail.com \
 SESSION_SECRET=$(openssl rand -hex 32) go run .
+# (ou crie um .env — no diretório atual ou na raiz do repo — que o gateway
+#  carrega sozinho; variáveis já exportadas têm precedência)
 
 # 3. Frontend com hot reload (proxy /api e /auth → :8090)
 cd frontend-web && npm install && npm run dev
