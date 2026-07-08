@@ -130,6 +130,29 @@ func TestPlanInsertionsTargetBeyondQueueEnd(t *testing.T) {
 	}
 }
 
+// Regressão: com repeat ligado, as faixas ANTES da atual têm horário de amanhã
+// (wrap). O plano deve inserir perto do alvo cronológico, não na posição 0.
+func TestPlanInsertionsWithRepeatWrap(t *testing.T) {
+	st := model.Status{Song: 2, Elapsed: 30, Repeat: true}
+	songs := []model.Song{
+		{Pos: 0, Time: 3600}, {Pos: 1, Time: 3600},
+		{Pos: 2, Time: 3600}, {Pos: 3, Time: 3600},
+	}
+	queue := ComputeTimes(songs, st, now)
+	// Cronologia: pos2 (13:59:30), pos3 (14:59:30), pos0 (wrap 15:59:30), pos1 (16:59:30).
+	positions := PlanInsertions(queue, 3, 1*time.Hour, nil, nil, now)
+	// Alvos 14:00→pos3, 15:00→pos0 (wrap), 16:00→pos1; decrescente: [3 1 0].
+	want := []int{3, 1, 0}
+	if len(positions) != 3 {
+		t.Fatalf("positions: %v", positions)
+	}
+	for i, w := range want {
+		if positions[i] != w {
+			t.Errorf("positions[%d]=%d want %d (all=%v)", i, positions[i], w, positions)
+		}
+	}
+}
+
 func TestPlanInsertionsZeroTimes(t *testing.T) {
 	if got := PlanInsertions(queue24h(), 0, time.Hour, nil, nil, now); len(got) != 0 {
 		t.Fatalf("got %v", got)

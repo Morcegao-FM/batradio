@@ -4,6 +4,7 @@
 package schedule
 
 import (
+	"sort"
 	"time"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/model"
@@ -76,6 +77,17 @@ func PlanInsertions(queue []QueueItem, times int, interval time.Duration, from, 
 	if from != nil {
 		start = *from
 	}
+	// Com repeat ligado, as faixas ANTES da atual têm horário de amanhã (wrap):
+	// a fila não é cronológica por índice. Ordena os índices por horário para
+	// achar, por alvo, a primeira faixa que toca a partir dele.
+	order := make([]int, len(queue))
+	for i := range order {
+		order[i] = i
+	}
+	sort.SliceStable(order, func(a, b int) bool {
+		return queue[order[a]].NextPresentation.Before(queue[order[b]].NextPresentation)
+	})
+
 	var positions []int
 	for k := 0; k < times; k++ {
 		target := start.Add(time.Duration(k) * interval)
@@ -83,17 +95,15 @@ func PlanInsertions(queue []QueueItem, times int, interval time.Duration, from, 
 			break
 		}
 		pos := len(queue)
-		for i, item := range queue {
-			if !item.NextPresentation.Before(target) {
-				pos = i
-				break
-			}
+		slot := sort.Search(len(order), func(i int) bool {
+			return !queue[order[i]].NextPresentation.Before(target)
+		})
+		if slot < len(order) {
+			pos = queue[order[slot]].Pos
 		}
 		positions = append(positions, pos)
 	}
-	// Ordena decrescente (targets crescem, então basta inverter).
-	for i, j := 0, len(positions)-1; i < j; i, j = i+1, j-1 {
-		positions[i], positions[j] = positions[j], positions[i]
-	}
+	// Decrescente: inserir de trás pra frente preserva as posições anteriores.
+	sort.Sort(sort.Reverse(sort.IntSlice(positions)))
 	return positions
 }
