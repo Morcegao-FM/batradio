@@ -68,6 +68,15 @@ func TestLoadMissingGoogleOutsideDevMode(t *testing.T) {
 	if !c.DevMode {
 		t.Error("DevMode not set")
 	}
+	found := false
+	for _, e := range c.AllowedEmails {
+		if e == "dev@localhost" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("dev@localhost should be allowlisted in dev mode")
+	}
 }
 
 func TestLoadCustomPortAndStream(t *testing.T) {

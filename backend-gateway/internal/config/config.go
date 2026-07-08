@@ -53,7 +53,11 @@ func Load(getenv func(string) string) (*Config, error) {
 	if len(c.AllowedEmails) == 0 {
 		return nil, fmt.Errorf("ALLOWED_EMAILS deve conter pelo menos um e-mail")
 	}
-	if !c.DevMode {
+	if c.DevMode {
+		// O login de desenvolvimento assina sessão como dev@localhost; precisa
+		// estar na allowlist para passar no middleware.
+		c.AllowedEmails = append(c.AllowedEmails, "dev@localhost")
+	} else {
 		if c.GoogleClientID == "" || c.GoogleClientSecret == "" || c.OAuthRedirectURL == "" {
 			return nil, fmt.Errorf("GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET e OAUTH_REDIRECT_URL são obrigatórios fora do DEV_MODE")
 		}
