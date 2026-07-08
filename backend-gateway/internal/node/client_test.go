@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 const testKey = "test-api-key"
@@ -184,13 +185,84 @@ func TestPlaylistNameOperations(t *testing.T) {
 func TestServerErrorIsNodeUnavailable(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
-		w.Write([]byte(`{"message":"MPD is busy"}`))
+		w.Write([]byte(`{"message":"erro interno"}`))
 	}))
 	t.Cleanup(srv.Close)
 	c := New(srv.URL, testKey)
 	_, err := c.GetStatus(context.Background())
 	if !errors.Is(err, ErrNodeUnavailable) {
 		t.Fatalf("expected ErrNodeUnavailable, got %v", err)
+	}
+}
+
+// O Node tem uma trava global "busy" (ex.: durante o scan do acervo). O
+// cliente deve tentar de novo em vez de estourar 502 na cara do usuário.
+func TestBusyIsRetried(t *testing.T) {
+	oldBackoff := busyBackoff
+	busyBackoff = time.Millisecond
+	t.Cleanup(func() { busyBackoff = oldBackoff })
+
+	var calls int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		if calls < 3 {
+			w.WriteHeader(500)
+			w.Write([]byte(`{"message":"MPD is busy, try again later"}`))
+			return
+		}
+		w.Write([]byte(`{"state":"play","song":"0","playlistlength":"1"}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	c := New(srv.URL, testKey)
+	st, err := c.GetStatus(context.Background())
+	if err != nil {
+		t.Fatalf("expected retry to succeed, got %v", err)
+	}
+	if st.State != "play" || calls != 3 {
+		t.Fatalf("state=%q calls=%d", st.State, calls)
+	}
+}
+
+func TestBusyGivesUpAfterRetries(t *testing.T) {
+	oldBackoff := busyBackoff
+	busyBackoff = time.Millisecond
+	t.Cleanup(func() { busyBackoff = oldBackoff })
+
+	var calls int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.WriteHeader(500)
+		w.Write([]byte(`{"message":"MPD is busy, try again later"}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	c := New(srv.URL, testKey)
+	_, err := c.GetStatus(context.Background())
+	if !errors.Is(err, ErrNodeUnavailable) {
+		t.Fatalf("expected ErrNodeUnavailable, got %v", err)
+	}
+	if calls != busyRetries+1 {
+		t.Fatalf("calls=%d want %d", calls, busyRetries+1)
+	}
+}
+
+func TestNonBusyErrorIsNotRetried(t *testing.T) {
+	var calls int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.WriteHeader(500)
+		w.Write([]byte(`{"message":"boom"}`))
+	}))
+	t.Cleanup(srv.Close)
+
+	c := New(srv.URL, testKey)
+	_, err := c.GetStatus(context.Background())
+	if !errors.Is(err, ErrNodeUnavailable) {
+		t.Fatalf("expected ErrNodeUnavailable, got %v", err)
+	}
+	if calls != 1 {
+		t.Fatalf("calls=%d want 1 (sem retry)", calls)
 	}
 }
 

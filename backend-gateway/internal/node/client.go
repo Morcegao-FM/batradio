@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/model"
@@ -33,10 +34,36 @@ func New(baseURL, apiKey string) *Client {
 	}
 }
 
+// busyRetries e busyBackoff controlam as novas tentativas quando o Node
+// responde "MPD is busy" (trava global dele durante scans do acervo/fila).
+var (
+	busyRetries = 4
+	busyBackoff = 700 * time.Millisecond
+)
+
 func (c *Client) do(ctx context.Context, method, path string, headers map[string]string) ([]byte, error) {
+	var lastErr error
+	for attempt := 0; ; attempt++ {
+		body, busy, err := c.doOnce(ctx, method, path, headers)
+		if err == nil {
+			return body, nil
+		}
+		lastErr = err
+		if !busy || attempt >= busyRetries {
+			return nil, lastErr
+		}
+		select {
+		case <-ctx.Done():
+			return nil, lastErr
+		case <-time.After(busyBackoff * time.Duration(attempt+1)):
+		}
+	}
+}
+
+func (c *Client) doOnce(ctx context.Context, method, path string, headers map[string]string) (body []byte, busy bool, err error) {
 	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, nil)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	req.Header.Set("batradio-apikey", c.apiKey)
 	for k, v := range headers {
@@ -44,12 +71,12 @@ func (c *Client) do(ctx context.Context, method, path string, headers map[string
 	}
 	resp, err := c.http.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrNodeUnavailable, err)
+		return nil, false, fmt.Errorf("%w: %v", ErrNodeUnavailable, err)
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(resp.Body)
+	body, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrNodeUnavailable, err)
+		return nil, false, fmt.Errorf("%w: %v", ErrNodeUnavailable, err)
 	}
 	if resp.StatusCode != http.StatusOK {
 		msg := string(body)
@@ -59,9 +86,10 @@ func (c *Client) do(ctx context.Context, method, path string, headers map[string
 		if json.Unmarshal(body, &e) == nil && e.Message != "" {
 			msg = e.Message
 		}
-		return nil, fmt.Errorf("%w: %s (HTTP %d)", ErrNodeUnavailable, msg, resp.StatusCode)
+		busy = strings.Contains(strings.ToLower(msg), "busy")
+		return nil, busy, fmt.Errorf("%w: %s (HTTP %d)", ErrNodeUnavailable, msg, resp.StatusCode)
 	}
-	return body, nil
+	return body, false, nil
 }
 
 // mpdStatus espelha o JSON cru do Node para /status.
