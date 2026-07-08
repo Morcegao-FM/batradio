@@ -100,6 +100,16 @@ func (i *Index) Stats() (int, time.Time) {
 	return len(i.songs), i.refreshedAt
 }
 
+// MatchesQuery aplica a mesma semântica de busca do índice a uma faixa avulsa
+// (usada para filtrar a fila).
+func MatchesQuery(s model.Song, q string) bool {
+	terms := splitTerms(q)
+	if len(terms) == 0 {
+		return true
+	}
+	return matchesAll(searchKey(s), terms)
+}
+
 func splitTerms(q string) []string {
 	var terms []string
 	for _, t := range strings.Fields(q) {

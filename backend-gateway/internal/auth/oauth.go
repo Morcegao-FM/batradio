@@ -47,11 +47,16 @@ func (o *OAuth) SetEndpoints(authURL, tokenURL, userinfoURL string) {
 	o.userinfoURL = userinfoURL
 }
 
-func (o *OAuth) Routes() chi.Router {
-	r := chi.NewRouter()
+// Register adiciona as rotas de autenticação a um router existente.
+func (o *OAuth) Register(r chi.Router) {
 	r.Get("/auth/login", o.handleLogin)
 	r.Get("/auth/callback", o.handleCallback)
 	r.Post("/auth/logout", o.handleLogout)
+}
+
+func (o *OAuth) Routes() chi.Router {
+	r := chi.NewRouter()
+	o.Register(r)
 	return r
 }
 
