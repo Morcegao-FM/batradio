@@ -1,0 +1,30 @@
+# BatRadio Web — gateway Go (público) + backend Node legado (rede interna).
+# 1. Copie backend-gateway/.env.example para .env e preencha.
+# 2. Copie backend-server/config.template.json para backend-server/config.json
+#    (aponte para o MPD e defina o apiKey — o mesmo de NODE_API_KEY no .env).
+# 3. docker compose up -d --build
+#
+# TLS: exponha a porta 8080 apenas ao proxy reverso do host (Caddy/Nginx) com
+# HTTPS no domínio do OAUTH_REDIRECT_URL.
+services:
+  node-backend:
+    build: ./backend-server
+    restart: unless-stopped
+    volumes:
+      - ./backend-server/config.json:/app/config.json:ro
+    expose:
+      - "9320"
+    # Sem "ports": o Node não fica acessível fora da rede do compose.
+
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_BACKEND_URL: http://node-backend:9320
+    ports:
+      - "8080:8080"
+    depends_on:
+      - node-backend
