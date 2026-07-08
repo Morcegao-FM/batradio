@@ -42,7 +42,11 @@ export default function NowPlaying() {
           onAdd={handleAdd}
           onAddMany={setAddManySong}
         />
-        <QueuePanel selected={selectedQueueItem} onSelect={setSelectedQueueItem} />
+        <QueuePanel
+          selected={selectedQueueItem}
+          onSelect={setSelectedQueueItem}
+          onAddFile={(file, position) => add.mutate({ file, position })}
+        />
       </div>
 
       {addManySong && (

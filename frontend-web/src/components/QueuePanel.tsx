@@ -6,6 +6,7 @@ import type { QueueItem, QueuePage, Status } from '../lib/types'
 import { formatClock, formatDuration } from '../lib/format'
 import { useDebounced, usePagedList, type VisibleRange } from '../hooks/usePagedList'
 import { useStatus } from '../hooks/useStatus'
+import { getDragPayload, hasDragPayload, moveTargetFor, setDragPayload } from '../lib/dnd'
 import GenreChip from './GenreChip'
 import ConfirmDialog from './ConfirmDialog'
 import ListState from './ListState'
@@ -16,9 +17,11 @@ const ROW_HEIGHT = 56
 export default function QueuePanel({
   selected,
   onSelect,
+  onAddFile,
 }: {
   selected?: QueueItem
   onSelect: (item: QueueItem) => void
+  onAddFile: (file: string, position: number) => void
 }) {
   const [query, setQuery] = useState('')
   const q = useDebounced(query)
@@ -73,6 +76,39 @@ export default function QueuePanel({
   // Dupla confirmação para tocar (comportamento do cliente Windows).
   const [confirmPlay, setConfirmPlay] = useState<{ item: QueueItem; step: 1 | 2 } | null>(null)
 
+  // Alvo do arrastar-e-soltar: inserir antes/depois da posição sob o cursor.
+  const [dropTarget, setDropTarget] = useState<{ pos: number; before: boolean } | null>(null)
+
+  // Posição de inserção a partir da linha alvo (antes = pos, depois = pos+1).
+  const insertionAt = (target: { pos: number; before: boolean }) =>
+    target.before ? target.pos : target.pos + 1
+
+  const handleDrop = (e: React.DragEvent, target: { pos: number; before: boolean } | null) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDropTarget(null)
+    const payload = getDragPayload(e)
+    if (!payload) return
+    const insertAt = target ? insertionAt(target) : total // fora das linhas: fim da fila
+    if (payload.type === 'library') {
+      onAddFile(payload.file, insertAt)
+      return
+    }
+    const to = moveTargetFor(payload.pos, insertAt)
+    if (to !== null) {
+      move.mutate({ from: payload.pos, to })
+    }
+  }
+
+  const handleRowDragOver = (e: React.DragEvent, item: QueueItem) => {
+    if (!hasDragPayload(e)) return
+    e.preventDefault()
+    e.stopPropagation()
+    const rect = e.currentTarget.getBoundingClientRect()
+    const before = e.clientY - rect.top < rect.height / 2
+    setDropTarget((d) => (d?.pos === item.pos && d.before === before ? d : { pos: item.pos, before }))
+  }
+
   const goToCurrent = async () => {
     setQuery('')
     const { index } = await api<{ pos: number; index: number }>('/api/playlist/current')
@@ -103,21 +139,45 @@ export default function QueuePanel({
         </button>
       </div>
 
-      <div ref={parentRef} className={styles.list}>
+      <div
+        ref={parentRef}
+        className={styles.list}
+        onDragOver={(e) => {
+          // área fora das linhas (fila vazia ou abaixo da última): solta no fim
+          if (!hasDragPayload(e)) return
+          e.preventDefault()
+          setDropTarget(null)
+        }}
+        onDrop={(e) => handleDrop(e, null)}
+        onDragLeave={(e) => {
+          if (e.currentTarget === e.target) setDropTarget(null)
+        }}
+      >
         {total === 0 && (
-          <ListState error={error} isFetching={isFetching} emptyMessage="Fila vazia" />
+          <ListState error={error} isFetching={isFetching} emptyMessage="Fila vazia — arraste faixas do acervo" />
         )}
         <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
           {virtualizer.getVirtualItems().map((row) => {
             const item = itemAt(row.index)
             const isCurrent = item !== undefined && item.pos === currentPos
             const isSelected = item !== undefined && selected?.pos === item.pos
+            const isDropBefore = item !== undefined && dropTarget?.pos === item.pos && dropTarget.before
+            const isDropAfter = item !== undefined && dropTarget?.pos === item.pos && !dropTarget.before
             return (
               <div
                 key={row.key}
-                className={`${styles.row} ${isCurrent ? styles.rowCurrent : ''} ${isSelected ? styles.rowSelected : ''}`}
+                className={`${styles.row} ${isCurrent ? styles.rowCurrent : ''} ${isSelected ? styles.rowSelected : ''} ${isDropBefore ? styles.rowDropBefore : ''} ${isDropAfter ? styles.rowDropAfter : ''}`}
                 style={{ transform: `translateY(${row.start}px)`, height: ROW_HEIGHT }}
                 onClick={() => item && onSelect(item)}
+                draggable={!!item}
+                onDragStart={(e) => {
+                  if (!item) return
+                  onSelect(item)
+                  setDragPayload(e, { type: 'queue', pos: item.pos, title: item.title })
+                }}
+                onDragEnd={() => setDropTarget(null)}
+                onDragOver={(e) => item && handleRowDragOver(e, item)}
+                onDrop={(e) => item && handleDrop(e, dropTarget ?? { pos: item.pos, before: true })}
               >
                 {item ? (
                   <>

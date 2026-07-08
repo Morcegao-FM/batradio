@@ -4,6 +4,7 @@ import { api } from '../lib/api'
 import type { Page, Song } from '../lib/types'
 import { formatDuration } from '../lib/format'
 import { useDebounced, usePagedList, type VisibleRange } from '../hooks/usePagedList'
+import { setDragPayload } from '../lib/dnd'
 import GenreChip from './GenreChip'
 import ListState from './ListState'
 import styles from './Panel.module.css'
@@ -93,6 +94,13 @@ export default function LibraryPanel({
                 className={`${styles.row} ${selected?.file === song?.file ? styles.rowSelected : ''}`}
                 style={{ transform: `translateY(${row.start}px)`, height: ROW_HEIGHT }}
                 onClick={() => song && onSelect(song)}
+                draggable={!!song}
+                onDragStart={(e) => {
+                  if (!song) return
+                  onSelect(song)
+                  setDragPayload(e, { type: 'library', file: song.file, title: song.title })
+                }}
+                title={song ? 'Arraste para a fila para agendar' : undefined}
               >
                 {song ? (
                   <>

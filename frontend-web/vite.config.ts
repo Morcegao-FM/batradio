@@ -21,8 +21,10 @@ export default defineConfig({
   plugins: [react(), keepGitkeep('../backend-gateway/web/dist')],
   server: {
     proxy: {
-      '/api': 'http://localhost:8090',
-      '/auth': 'http://localhost:8090',
+      // Gateway local (troque com VITE_GATEWAY_URL, ex.: apontar para um
+      // gateway de teste com o fake-node em vez do servidor real).
+      '/api': process.env.VITE_GATEWAY_URL ?? 'http://localhost:8080',
+      '/auth': process.env.VITE_GATEWAY_URL ?? 'http://localhost:8080',
     },
   },
   build: {
