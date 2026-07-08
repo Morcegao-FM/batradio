@@ -1,0 +1,29 @@
+.app {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.banner {
+  background: var(--brand-quiet);
+  border-bottom: var(--border-width) solid var(--brand);
+  color: var(--text-strong);
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  text-align: center;
+  padding: var(--space-2) var(--space-4);
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-5) var(--space-6);
+}

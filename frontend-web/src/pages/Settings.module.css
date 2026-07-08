@@ -1,0 +1,115 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: var(--space-5);
+  max-width: 960px;
+}
+
+.card {
+  background: var(--surface-card);
+  border: var(--border-width) solid var(--border-hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.accentAmber {
+  border-top: var(--border-heavy) solid var(--highlight);
+}
+
+.accentBlue {
+  border-top: var(--border-heavy) solid var(--accent);
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+}
+
+.kickerAmber {
+  color: var(--highlight);
+}
+
+.kickerBlue {
+  color: var(--accent);
+}
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-poster);
+  color: var(--text-strong);
+  margin-bottom: var(--space-3);
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.infoList div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-bottom: var(--border-width) solid var(--border-hairline);
+  padding-bottom: var(--space-3);
+}
+
+.infoList dt {
+  color: var(--text-faint);
+  font-size: var(--text-sm);
+}
+
+.infoList dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-body);
+}
+
+.ok {
+  color: var(--live-400) !important;
+}
+
+.down {
+  color: var(--red-300) !important;
+}
+
+.note {
+  font-size: var(--text-xs);
+  color: var(--text-faint);
+}
+
+.refreshButton {
+  margin-top: var(--space-3);
+  font-family: var(--font-heading);
+  font-weight: var(--fw-semibold);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  background: var(--accent);
+  color: var(--text-on-accent);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5);
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.refreshButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.success {
+  font-size: var(--text-sm);
+  color: var(--live-400);
+}

@@ -1,0 +1,27 @@
+# BatRadio Gateway: builda o frontend React, embute no binário Go e gera uma
+# imagem mínima. Build a partir da RAIZ do repositório:
+#   docker build -f Dockerfile.gateway -t batradio-gateway .
+
+# --- Estágio 1: build do frontend ---
+FROM node:22-alpine AS frontend
+WORKDIR /app/frontend-web
+COPY frontend-web/package.json frontend-web/package-lock.json ./
+RUN npm ci
+COPY frontend-web/ ./
+# O outDir do vite aponta para ../backend-gateway/web/dist
+RUN mkdir -p /app/backend-gateway/web && npm run build
+
+# --- Estágio 2: build do gateway ---
+FROM golang:1.25-alpine AS backend
+WORKDIR /app/backend-gateway
+COPY backend-gateway/go.mod backend-gateway/go.sum ./
+RUN go mod download
+COPY backend-gateway/ ./
+COPY --from=frontend /app/backend-gateway/web/dist ./web/dist
+RUN CGO_ENABLED=0 go build -ldflags='-s -w' -o /batradio-gateway .
+
+# --- Estágio 3: imagem final ---
+FROM gcr.io/distroless/static-debian12
+COPY --from=backend /batradio-gateway /batradio-gateway
+EXPOSE 8080
+ENTRYPOINT ["/batradio-gateway"]

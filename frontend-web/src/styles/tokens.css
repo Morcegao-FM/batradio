@@ -1,0 +1,145 @@
+/* Design tokens — Morcegão FM Design System (extraídos do wireframe aprovado) */
+:root {
+  /* --- Neutros quentes (nunca #000/#fff puros) --- */
+  --bat-black: #0C0A09;
+  --bat-coal: #141110;
+  --bat-ash: #1C1917;
+  --bat-smoke: #2A2522;
+  --bat-iron: #3B3430;
+  --bat-slate: #574E48;
+  --bat-dust: #8A7F76;
+  --bat-fog: #B8ADA2;
+  --bat-bone: #F5EFE3;
+  --bat-paper: #FBF7EE;
+
+  /* --- Marca: Blood Red --- */
+  --red-900: #4A0D0B;
+  --red-700: #9A160F;
+  --red-600: #C21A12;
+  --red-500: #E4261D;
+  --red-400: #F0443A;
+  --red-300: #F87A72;
+
+  /* --- Âmbar (destaque) --- */
+  --amber-700: #9A5B00;
+  --amber-600: #C77800;
+  --amber-500: #F2A007;
+  --amber-400: #FBBF3F;
+  --amber-300: #FFD97A;
+
+  /* --- Azul (info/acervo) --- */
+  --blue-700: #114B7A;
+  --blue-600: #1A6FB0;
+  --blue-500: #2A9DF4;
+  --blue-400: #57B6FF;
+  --blue-300: #9AD3FF;
+
+  /* --- Verde AO VIVO --- */
+  --live-500: #34C759;
+  --live-400: #5AD97A;
+
+  /* --- Aliases semânticos --- */
+  --bg-page: var(--bat-black);
+  --bg-gutter: var(--bat-coal);
+  --surface-card: var(--bat-ash);
+  --surface-raised: var(--bat-smoke);
+  --surface-sunken: var(--bat-coal);
+  --surface-input: var(--bat-smoke);
+  --text-strong: var(--bat-paper);
+  --text-body: var(--bat-bone);
+  --text-muted: var(--bat-fog);
+  --text-faint: var(--bat-dust);
+  --text-on-accent: var(--bat-paper);
+  --text-on-amber: var(--bat-black);
+  --brand: var(--red-500);
+  --brand-hover: var(--red-400);
+  --brand-press: var(--red-600);
+  --brand-quiet: var(--red-900);
+  --accent: var(--blue-500);
+  --accent-hover: var(--blue-400);
+  --highlight: var(--amber-500);
+  --highlight-hover: var(--amber-400);
+  --border-hairline: var(--bat-iron);
+  --border-strong: var(--bat-slate);
+  --border-brand: var(--red-500);
+  --live: var(--live-500);
+  --danger: var(--red-500);
+  --warning: var(--amber-500);
+  --info: var(--blue-500);
+  --link: var(--blue-400);
+  --link-hover: var(--amber-400);
+
+  /* --- Tipografia --- */
+  --font-display: 'Anton', 'Oswald', 'Arial Narrow', sans-serif;
+  --font-heading: 'Oswald', 'Barlow', system-ui, sans-serif;
+  --font-body: 'Barlow', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --text-hero: clamp(3.5rem, 7vw + 1rem, 7rem);
+  --text-display: clamp(2.5rem, 4vw + 1rem, 4.25rem);
+  --text-title: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  --text-2xl: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-lg: 1.125rem;
+  --text-md: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+  --text-2xs: 0.6875rem;
+  --lh-tight: 0.95;
+  --lh-snug: 1.15;
+  --lh-normal: 1.55;
+  --lh-relaxed: 1.7;
+  --ls-poster: 0.005em;
+  --ls-tight: -0.01em;
+  --ls-normal: 0;
+  --ls-label: 0.14em;
+  --ls-caps: 0.06em;
+
+  /* --- Espaços e layout --- */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+  --container: 1200px;
+  --container-wide: 1440px;
+  --container-text: 720px;
+  --gutter: clamp(1rem, 4vw, 4rem);
+  --header-h: 72px;
+  --player-h: 84px;
+
+  /* --- Bordas, sombras e glows --- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
+  --border-width: 1px;
+  --border-heavy: 2px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 24px 60px rgba(0, 0, 0, 0.7);
+  --glow-red: 0 0 0 3px rgba(228, 38, 29, 0.35);
+  --glow-amber: 0 0 18px rgba(242, 160, 7, 0.45);
+  --glow-blue: 0 0 0 3px rgba(42, 157, 244, 0.35);
+  --glow-live: 0 0 0 0 rgba(52, 199, 89, 0.6);
+  --focus-ring: 0 0 0 3px rgba(242, 160, 7, 0.55);
+
+  /* --- Movimento --- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 360ms;
+  --grain-opacity: 0.05;
+}

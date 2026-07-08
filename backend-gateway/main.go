@@ -1,0 +1,117 @@
+// BatRadio Gateway: autentica via Google OAuth, expõe a API nova na frente do
+// backend Node/MPD e serve o frontend React embutido.
+package main
+
+import (
+	"context"
+	"errors"
+	"io/fs"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/auth"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/config"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpapi"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/node"
+	"github.com/Morcegao-FM/batradio/backend-gateway/web"
+)
+
+func main() {
+	cfg, err := config.Load(os.Getenv)
+	if err != nil {
+		log.Fatalf("configuração inválida: %v", err)
+	}
+	if cfg.DevMode {
+		log.Println("ATENÇÃO: DEV_MODE ativo — login sem Google, NÃO use em produção")
+	}
+
+	nodeClient := node.New(cfg.NodeBackendURL, cfg.NodeAPIKey)
+	server := httpapi.NewServer(cfg, nodeClient)
+	oauth := auth.NewOAuth(cfg)
+
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	// Poller de status (SSE) e refresh inicial do acervo com retry: o Node pode
+	// demorar a subir junto no docker compose.
+	go server.Poller().Run(ctx)
+	go func() {
+		for {
+			songs, err := server.Node().GetFiles(ctx, true)
+			if err == nil {
+				server.Library().Set(songs, time.Now())
+				log.Printf("acervo indexado: %d faixas", len(songs))
+				return
+			}
+			log.Printf("acervo indisponível (%v), tentando de novo em 30s", err)
+			select {
+			case <-ctx.Done():
+				return
+			case <-time.After(30 * time.Second):
+			}
+		}
+	}()
+
+	r := chi.NewRouter()
+	r.Use(middleware.RealIP)
+	r.Use(middleware.Recoverer)
+	r.Mount("/", server.Routes(oauth))
+	r.NotFound(spaHandler())
+
+	srv := &http.Server{
+		Addr:              ":" + cfg.Port,
+		Handler:           r,
+		ReadHeaderTimeout: 10 * time.Second,
+	}
+	go func() {
+		log.Printf("gateway ouvindo em :%s", cfg.Port)
+		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Fatalf("servidor: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("encerrando...")
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	srv.Shutdown(shutdownCtx)
+}
+
+// spaHandler serve os estáticos do build do React com fallback para
+// index.html (rotas client-side como /playlists).
+func spaHandler() http.HandlerFunc {
+	dist, err := fs.Sub(web.Dist, "dist")
+	if err != nil {
+		log.Fatalf("embed do frontend: %v", err)
+	}
+	fileServer := http.FileServerFS(dist)
+	return func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/") || strings.HasPrefix(r.URL.Path, "/auth/") {
+			http.NotFound(w, r)
+			return
+		}
+		path := strings.TrimPrefix(r.URL.Path, "/")
+		if path != "" {
+			if _, err := fs.Stat(dist, path); err == nil {
+				fileServer.ServeHTTP(w, r)
+				return
+			}
+		}
+		// fallback SPA
+		index, err := fs.ReadFile(dist, "index.html")
+		if err != nil {
+			http.Error(w, "frontend não embarcado", http.StatusServiceUnavailable)
+			return
+		}
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Write(index)
+	}
+}
