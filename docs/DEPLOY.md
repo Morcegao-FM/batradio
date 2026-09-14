@@ -24,19 +24,20 @@ docker network ls | grep telogreug
 docker ps -a --format '{{.Names}}' | grep -i batradio
 ```
 
-`NODE_BACKEND_URL` sai daí:
+### Valores reais (levantados em 2026-09-14)
 
-- Node em container na `telogreug` → `http://<nome-do-container>:9320`.
-- Node como processo no host → `http://host.docker.internal:9320`, e acrescentar
-  ao serviço `gateway` em `docker-compose.main.yml`:
-  ```yaml
-      extra_hosts:
-        - "host.docker.internal:host-gateway"
-  ```
+| | |
+|---|---|
+| Node do operador | container **`batradio`**, imagem `guergolet/batradio`, na rede `telogreug` |
+| Definido em | `/root/apps/batstream/docker-compose.yml` — **nunca rode compose nesse diretório**: ele também sobe MPD (`batstream`), Icecast (`baticecast`), Liquidsoap e o `batbelt` |
+| `NODE_BACKEND_URL` | `http://batradio:9320` (resolve dentro da `telogreug`) |
+| `NODE_API_KEY` | campo `webserver.apiKey` de `/root/apps/batstream/config.json` |
+| `CATALOGO_URL` | `http://api:8080` (alias do `morcegao-fm-main-api-1` na `telogreug`) |
+| Certresolver do Traefik | `letsencrypt` |
+| Diretório de deploy | `~/apps/batradio-web` — **`~/apps/batradio` está ocupado** por um deploy de 2021 (`batradio-digao`, porta 9321), que não roda |
 
-`NODE_API_KEY` tem de ser **a mesma chave que o cliente do Renato usa**
-(`backend-server/config.json` no servidor, campo `webserver.apiKey`). Assim nada
-no Node precisa mudar.
+`NODE_API_KEY` tem de ser **a mesma chave que o cliente do Renato usa**. Copie
+de `/root/apps/batstream/config.json`; nada no Node precisa mudar.
 
 ## Google OAuth
 
@@ -58,7 +59,7 @@ A mesma string nos dois lados:
 
 - Website: `SERVICO_CHAVE` no `.env` de `~/apps/morcegao-fm-main`, que o
   `docker-compose.main.yml` de lá injeta como `Servico__Chave`.
-- BatRadio: `CATALOGO_CHAVE` no `.env` de `~/apps/batradio`.
+- BatRadio: `CATALOGO_CHAVE` no `.env` de `~/apps/batradio-web`.
 
 Gerar com `openssl rand -hex 32`. Menos de 32 caracteres e a API recusa
 autenticar — de propósito.
@@ -66,7 +67,7 @@ autenticar — de propósito.
 ## Primeira subida (manual, com o Renato avisado)
 
 ```bash
-mkdir -p ~/apps/batradio && cd ~/apps/batradio
+mkdir -p ~/apps/batradio-web && cd ~/apps/batradio-web
 git clone -b main git@github.com:Morcegao-FM/batradio.git .
 cp backend-gateway/.env.example .env   # preencher com os valores reais
 echo "TAG=<sha do commit>" >> .env

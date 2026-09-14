@@ -69,7 +69,7 @@ jobs:
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
           script: |
             set -euo pipefail
-            cd ~/apps/batradio
+            cd ~/apps/batradio-web
 
             ANTERIOR=$(grep '^TAG=' .env | cut -d= -f2 || echo "")
             NOVA="${{ needs.publicar.outputs.tag }}"
