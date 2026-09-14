@@ -31,12 +31,12 @@ func writeAuthError(w http.ResponseWriter, status int, code, message string) {
 func RequireSession(secret []byte, allowed []string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			cookie, err := r.Cookie(SessionCookie)
-			if err != nil {
+			valor, ok := LerSessao(r)
+			if !ok {
 				writeAuthError(w, http.StatusUnauthorized, "unauthenticated", "Sessão ausente. Faça login.")
 				return
 			}
-			email, ok := VerifySession(cookie.Value, secret, time.Now())
+			email, ok := VerifySession(valor, secret, time.Now())
 			if !ok {
 				writeAuthError(w, http.StatusUnauthorized, "unauthenticated", "Sessão inválida ou expirada. Faça login novamente.")
 				return

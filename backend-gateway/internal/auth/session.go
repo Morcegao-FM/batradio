@@ -6,12 +6,39 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
 )
 
-const SessionCookie = "batradio_session"
+// Nomes do cookie de sessão. O prefixo __Host- é uma trava do navegador: ele só
+// aceita o cookie se vier com Secure, Path=/ e sem Domain — então uma regressão
+// que desligue o Secure quebra o login em vez de degradar em silêncio. Em dev
+// (http://localhost) o prefixo é impossível, daí o nome simples.
+const (
+	SessionCookie     = "batradio_session"
+	SessionCookieHost = "__Host-batradio_session"
+)
+
+// CookieName devolve o nome a gravar conforme o cookie vá ou não com Secure.
+func CookieName(secure bool) string {
+	if secure {
+		return SessionCookieHost
+	}
+	return SessionCookie
+}
+
+// LerSessao procura o cookie de sessão nos dois nomes possíveis. Aceitar ambos
+// evita deslogar todo mundo no deploy que liga o Secure.
+func LerSessao(r *http.Request) (string, bool) {
+	for _, nome := range []string{SessionCookieHost, SessionCookie} {
+		if c, err := r.Cookie(nome); err == nil && c.Value != "" {
+			return c.Value, true
+		}
+	}
+	return "", false
+}
 
 // SessionTTL é a validade da sessão.
 const SessionTTL = 7 * 24 * time.Hour

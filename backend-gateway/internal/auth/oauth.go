@@ -60,19 +60,16 @@ func (o *OAuth) Routes() chi.Router {
 	return r
 }
 
-func secureCookie(r *http.Request) bool {
-	return r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
-}
-
 func (o *OAuth) setSessionCookie(w http.ResponseWriter, r *http.Request, email string) {
 	token := SignSession(email, time.Now().Add(SessionTTL), o.cfg.SessionSecret)
+	secure := o.cfg.CookieSecure
 	http.SetCookie(w, &http.Cookie{
-		Name:     SessionCookie,
+		Name:     CookieName(secure),
 		Value:    token,
 		Path:     "/",
 		MaxAge:   int(SessionTTL.Seconds()),
 		HttpOnly: true,
-		Secure:   secureCookie(r),
+		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 	})
 }
@@ -95,7 +92,7 @@ func (o *OAuth) handleLogin(w http.ResponseWriter, r *http.Request) {
 		Path:     "/auth",
 		MaxAge:   600,
 		HttpOnly: true,
-		Secure:   secureCookie(r),
+		Secure:   o.cfg.CookieSecure,
 		SameSite: http.SameSiteLaxMode,
 	})
 	url := o.oauth.AuthCodeURL(state, oauth2.SetAuthURLParam("prompt", "select_account"))
@@ -145,14 +142,19 @@ func (o *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (o *OAuth) handleLogout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     SessionCookie,
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-	})
+	// Expira os dois nomes: um cookie gravado antes de o Secure entrar não pode
+	// sobreviver ao logout.
+	for _, nome := range []string{SessionCookieHost, SessionCookie} {
+		http.SetCookie(w, &http.Cookie{
+			Name:     nome,
+			Value:    "",
+			Path:     "/",
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   o.cfg.CookieSecure,
+			SameSite: http.SameSiteLaxMode,
+		})
+	}
 	w.WriteHeader(http.StatusNoContent)
 }
 
