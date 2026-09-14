@@ -14,6 +14,7 @@ import (
 	"golang.org/x/oauth2/endpoints"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/config"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpsec"
 )
 
 // DevEmail é a identidade usada pelo login de desenvolvimento (DEV_MODE=true).
@@ -49,8 +50,11 @@ func (o *OAuth) SetEndpoints(authURL, tokenURL, userinfoURL string) {
 
 // Register adiciona as rotas de autenticação a um router existente.
 func (o *OAuth) Register(r chi.Router) {
-	r.Get("/auth/login", o.handleLogin)
-	r.Get("/auth/callback", o.handleCallback)
+	// 10 tentativas por minuto e por IP: folga para quem erra a conta, teto
+	// para quem está sondando o callback.
+	limite := httpsec.NewLimiter(10, time.Minute)
+	r.With(limite.Middleware).Get("/auth/login", o.handleLogin)
+	r.With(limite.Middleware).Get("/auth/callback", o.handleCallback)
 	r.Post("/auth/logout", o.handleLogout)
 }
 

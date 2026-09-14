@@ -20,6 +20,7 @@ import (
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/auth"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/config"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpapi"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpsec"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/node"
 	"github.com/Morcegao-FM/batradio/backend-gateway/web"
 )
@@ -76,6 +77,9 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
+	// CookieSecure é o proxy de "estou atrás de https": é exatamente a condição
+	// em que o HSTS deve sair.
+	r.Use(httpsec.Headers(cfg.StreamURL, cfg.CookieSecure))
 	r.Mount("/", server.Routes(oauth))
 	r.NotFound(spaHandler())
 
