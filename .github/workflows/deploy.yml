@@ -1,0 +1,98 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publicar:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ github.event.workflow_run.head_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build local primeiro: o Trivy precisa aprovar antes de a imagem existir
+      # no registry. Publicar e escanear depois seria publicar vulnerabilidade.
+      - name: Build da imagem
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.gateway
+          load: true
+          tags: batradio-gateway:${{ github.event.workflow_run.head_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: batradio-gateway:${{ github.event.workflow_run.head_sha }}
+          severity: CRITICAL,HIGH
+          exit-code: '1'
+          ignore-unfixed: true
+
+      - name: Publicar no GHCR
+        run: |
+          docker tag batradio-gateway:${{ github.event.workflow_run.head_sha }} \
+            ghcr.io/morcegao-fm/batradio-gateway:${{ github.event.workflow_run.head_sha }}
+          docker push ghcr.io/morcegao-fm/batradio-gateway:${{ github.event.workflow_run.head_sha }}
+
+  implantar:
+    needs: publicar
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy por SSH, com rollback
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_SSH_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            cd ~/apps/batradio
+
+            ANTERIOR=$(grep '^TAG=' .env | cut -d= -f2 || echo "")
+            NOVA="${{ needs.publicar.outputs.tag }}"
+
+            git pull --ff-only
+            if grep -q '^TAG=' .env; then
+              sed -i "s/^TAG=.*/TAG=$NOVA/" .env
+            else
+              echo "TAG=$NOVA" >> .env
+            fi
+
+            docker compose -f docker-compose.main.yml pull gateway
+
+            # Só o serviço gateway. O Node da 9320 não é declarado neste compose
+            # e não pode ser tocado: é o que o cliente Windows do operador usa.
+            if ! docker compose -f docker-compose.main.yml up -d --wait gateway; then
+              echo "Healthcheck falhou; voltando para $ANTERIOR"
+              sed -i "s/^TAG=.*/TAG=$ANTERIOR/" .env
+              docker compose -f docker-compose.main.yml up -d --wait gateway
+              exit 1
+            fi
+
+            curl -fsS http://127.0.0.1:9320/status \
+              -H "batradio-apikey: $(grep '^NODE_API_KEY=' .env | cut -d= -f2)" \
+              >/dev/null && echo "Node da 9320 segue respondendo" \
+              || echo "AVISO: a 9320 não respondeu — conferir com o operador"
