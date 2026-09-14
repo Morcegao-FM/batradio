@@ -62,17 +62,26 @@ jobs:
     steps:
       - name: Deploy por SSH, com rollback
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          # O host não tem credencial de registry gravada: o login é feito em
+          # runtime com o token do próprio workflow, como no morcegao-fm-website.
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NOVA: ${{ needs.publicar.outputs.tag }}
         with:
           host: ${{ secrets.DEPLOY_SSH_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          envs: GHCR_USER,GHCR_TOKEN,TAG_NOVA
           script: |
             set -euo pipefail
             cd ~/apps/batradio-web
 
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+
             ANTERIOR=$(grep '^TAG=' .env | cut -d= -f2 || echo "")
-            NOVA="${{ needs.publicar.outputs.tag }}"
+            NOVA="$TAG_NOVA"
 
             git pull --ff-only
             if grep -q '^TAG=' .env; then
@@ -91,6 +100,8 @@ jobs:
               docker compose -f docker-compose.main.yml up -d --wait gateway
               exit 1
             fi
+
+            docker logout ghcr.io >/dev/null 2>&1 || true
 
             curl -fsS http://127.0.0.1:9320/status \
               -H "batradio-apikey: $(grep '^NODE_API_KEY=' .env | cut -d= -f2)" \
