@@ -57,12 +57,18 @@ p {
 }
 
 input,
-select {
+select,
+textarea {
   background: var(--surface-input);
   border: var(--border-width) solid var(--border-hairline);
   border-radius: var(--radius-md);
   color: var(--text-body);
   padding: var(--space-3) var(--space-4);
+  /* Piso de 16px. Com `font: inherit` acima, um campo dentro de um bloco em
+   * --text-2xs herdaria 11px: ilegível, e no iOS o foco dá zoom e a página
+   * rola na horizontal. Regra do design system da Morcegão FM. */
+  font-size: var(--text-md);
+  font-family: var(--font-body);
 }
 
 input::placeholder {

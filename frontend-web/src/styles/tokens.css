@@ -70,10 +70,13 @@
   --link-hover: var(--amber-400);
 
   /* --- Tipografia --- */
-  --font-display: 'Anton', 'Oswald', 'Arial Narrow', sans-serif;
-  --font-heading: 'Oswald', 'Barlow', system-ui, sans-serif;
-  --font-body: 'Barlow', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace;
+  /* Geração atual do design system. A anterior era condensada (Anton/Oswald/
+   * Barlow): bonita em pôster, ruim para ler fila e acervo — e o público da
+   * rádio é 50–60+. Archivo e Figtree são mais largas e humanistas. */
+  --font-display: 'Archivo Black', system-ui, sans-serif; /* headline de pôster */
+  --font-heading: 'Archivo', system-ui, sans-serif; /* títulos de UI, botões, nome de faixa */
+  --font-body: 'Figtree', system-ui, -apple-system, sans-serif; /* corpo, UI densa */
+  --font-mono: 'Space Mono', ui-monospace, 'SFMono-Regular', monospace; /* labels, AO VIVO */
   --fw-regular: 400;
   --fw-medium: 500;
   --fw-semibold: 600;
