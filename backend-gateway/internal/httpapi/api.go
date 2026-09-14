@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -73,6 +74,9 @@ func (s *Server) Routes(o *auth.OAuth) chi.Router {
 
 	r.Route("/api", func(api chi.Router) {
 		api.Use(auth.RequireSession(s.cfg.SessionSecret, s.cfg.AllowedEmails))
+		// Depois do RequireSession de propósito: a auditoria precisa do e-mail
+		// já no contexto.
+		api.Use(auditoria(log.Printf))
 		api.Get("/me", s.handleMe)
 		api.Get("/status", s.handleStatus)
 		api.Get("/events", s.handleEvents)

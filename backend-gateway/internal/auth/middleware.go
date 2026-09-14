@@ -17,6 +17,12 @@ func EmailFromContext(ctx context.Context) string {
 	return email
 }
 
+// ContextComEmail injeta o e-mail autenticado. Existe para os testes montarem
+// um request já autenticado sem forjar cookie.
+func ContextComEmail(ctx context.Context, email string) context.Context {
+	return context.WithValue(ctx, emailKey, email)
+}
+
 func writeAuthError(w http.ResponseWriter, status int, code, message string) {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
@@ -45,7 +51,7 @@ func RequireSession(secret []byte, allowed []string) func(http.Handler) http.Han
 				writeAuthError(w, http.StatusForbidden, "email_not_allowed", "Este e-mail não tem permissão de acesso.")
 				return
 			}
-			next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), emailKey, email)))
+			next.ServeHTTP(w, r.WithContext(ContextComEmail(r.Context(), email)))
 		})
 	}
 }
