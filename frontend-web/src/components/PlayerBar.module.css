@@ -35,6 +35,7 @@
 .thumb {
   width: 46px;
   height: 46px;
+  /* cover para capa real (quadrada), contain não distorce o logo de fallback */
   object-fit: contain;
   background: var(--surface-raised);
   border-radius: var(--radius-sm);

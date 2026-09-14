@@ -15,12 +15,14 @@ export default function LibraryPanel({
   selected,
   onSelect,
   canAdd,
+  referenciaFila,
   onAdd,
   onAddMany,
 }: {
   selected?: Song
   onSelect: (song: Song) => void
   canAdd: boolean
+  referenciaFila: boolean
   onAdd: (place: 'above' | 'below') => void
   onAddMany: (song: Song) => void
 }) {
@@ -78,7 +80,13 @@ export default function LibraryPanel({
         <button className={styles.buttonBrand} disabled={!canAdd} onClick={() => onAdd('below')}>
           ↓ Adicionar abaixo
         </button>
-        <span className={styles.hint}>da faixa selecionada na fila</span>
+        <span className={styles.hint}>
+          {!selected
+            ? 'escolha uma faixa na lista abaixo'
+            : referenciaFila
+              ? 'da faixa selecionada na fila'
+              : 'da música que está tocando'}
+        </span>
       </div>
 
       <div ref={parentRef} className={styles.list}>

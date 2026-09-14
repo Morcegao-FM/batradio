@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router-dom'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo-marca.png'
 import styles from './Login.module.css'
 
 export default function Login() {

@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { post } from '../lib/api'
 import type { Status } from '../lib/types'
 import { useServerInfo, useStatus } from '../hooks/useStatus'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo-marca.png'
 import EditTrackModal from './EditTrackModal'
 import styles from './PlayerBar.module.css'
 

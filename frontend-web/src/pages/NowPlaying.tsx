@@ -5,6 +5,7 @@ import LibraryPanel from '../components/LibraryPanel'
 import QueuePanel from '../components/QueuePanel'
 import AddManyModal from '../components/AddManyModal'
 import { post } from '../lib/api'
+import { useStatus } from '../hooks/useStatus'
 import type { QueueItem, Song } from '../lib/types'
 import styles from './NowPlaying.module.css'
 
@@ -14,6 +15,7 @@ export default function NowPlaying() {
   const [addManySong, setAddManySong] = useState<Song>()
   const [toast, setToast] = useState<string>()
   const queryClient = useQueryClient()
+  const { status } = useStatus()
 
   const add = useMutation({
     mutationFn: ({ file, position }: { file: string; position: number }) =>
@@ -21,9 +23,14 @@ export default function NowPlaying() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['playlist'] }),
   })
 
+  // Sem linha da fila marcada, a referência é a música que está tocando: é o
+  // único "acima/abaixo de quê" que faz sentido quando nada foi selecionado, e
+  // deixa os botões utilizáveis já no primeiro clique do acervo.
+  const posicaoReferencia = selectedQueueItem?.pos ?? status?.song
+
   const handleAdd = (place: 'above' | 'below') => {
-    if (!selectedSong || !selectedQueueItem) return
-    const position = place === 'above' ? selectedQueueItem.pos : selectedQueueItem.pos + 1
+    if (!selectedSong || posicaoReferencia === undefined) return
+    const position = place === 'above' ? posicaoReferencia : posicaoReferencia + 1
     add.mutate({ file: selectedSong.file, position })
   }
 
@@ -33,12 +40,13 @@ export default function NowPlaying() {
   }
 
   return (
-    <Layout title="Tocando Agora" subtitle="Controle da programação ao vivo">
+    <Layout title="Bat Radio" subtitle="Controle da programação ao vivo">
       <div className={styles.columns}>
         <LibraryPanel
           selected={selectedSong}
           onSelect={setSelectedSong}
-          canAdd={!!selectedSong && !!selectedQueueItem && !add.isPending}
+          canAdd={!!selectedSong && posicaoReferencia !== undefined && !add.isPending}
+          referenciaFila={!!selectedQueueItem}
           onAdd={handleAdd}
           onAddMany={setAddManySong}
         />

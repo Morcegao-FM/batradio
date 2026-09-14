@@ -1,5 +1,7 @@
 .sidebar {
+  position: relative;
   width: 200px;
+  transition: width var(--dur-base) var(--ease-out);
   flex-shrink: 0;
   background: var(--bg-gutter);
   border-right: var(--border-width) solid var(--border-hairline);
@@ -10,7 +12,9 @@
 }
 
 .logo {
-  width: 130px;
+  /* Horizontal e transparente: ocupa a largura do menu, sem caixa branca. */
+  width: 100%;
+  max-width: 168px;
   align-self: center;
 }
 
@@ -124,7 +128,8 @@
 /* Compacto: vira barra inferior. `order: 2` a joga para baixo do conteúdo
    (no DOM ela vem primeiro, para leitor de tela encontrar a navegação cedo). */
 @media (max-width: 900px) {
-  .sidebar {
+  .sidebar,
+  .colapsado {
     order: 2;
     width: 100%;
     flex-direction: row;
@@ -140,7 +145,9 @@
   .logo,
   .liveCard,
   .footer,
-  .navLabel {
+  .navLabel,
+  /* Embaixo a barra já é compacta; recolher não teria o que economizar. */
+  .toggle {
     display: none;
   }
 
@@ -148,6 +155,15 @@
     flex: 1;
     flex-direction: row;
     gap: var(--space-2);
+  }
+
+  /* O estado recolhido é de desktop; embaixo o rótulo volta sempre. */
+  .colapsado .navTexto {
+    display: inline;
+  }
+
+  .colapsado .navItem {
+    justify-content: center;
   }
 
   .navItem {
@@ -172,4 +188,59 @@
     letter-spacing: 0;
     hyphens: auto;
   }
+}
+
+/* ---------- menu recolhido (só desktop) ---------- */
+
+.toggle {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-2);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-hairline);
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+  line-height: 1;
+  z-index: 1;
+}
+
+.toggle:hover {
+  color: var(--text-strong);
+  border-color: var(--brand);
+}
+
+.colapsado {
+  width: 64px;
+  padding-left: var(--space-2);
+  padding-right: var(--space-2);
+  align-items: center;
+}
+
+.colapsado .toggle {
+  position: static;
+  align-self: center;
+}
+
+/* No modo estreito sobra espaço só para o ícone. O texto sai do fluxo mas
+   continua no DOM, então o leitor de tela segue anunciando o destino. */
+.colapsado .logo,
+.colapsado .liveCard,
+.colapsado .footer,
+.colapsado .navLabel,
+.colapsado .navTexto {
+  display: none;
+}
+
+.colapsado .navItem {
+  justify-content: center;
+  padding: var(--space-3) 0;
+  min-height: var(--touch-target);
+}
+
+.navIcon {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 1em;
 }
