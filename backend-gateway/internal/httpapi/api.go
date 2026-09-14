@@ -62,6 +62,15 @@ func (s *Server) Routes(o *auth.OAuth) chi.Router {
 	if o != nil {
 		o.Register(r)
 	}
+	// Público de propósito, e deliberadamente vazio: é só o sinal de vida que o
+	// `docker compose up -d --wait` e o rollback do deploy leem. Não expõe
+	// versão, host do Node nem estado do acervo — isso seria superfície de graça
+	// para quem estiver sondando.
+	r.Get("/healthz", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Write([]byte(`{"status":"ok"}`))
+	})
+
 	r.Route("/api", func(api chi.Router) {
 		api.Use(auth.RequireSession(s.cfg.SessionSecret, s.cfg.AllowedEmails))
 		api.Get("/me", s.handleMe)
