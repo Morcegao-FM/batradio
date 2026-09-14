@@ -16,3 +16,10 @@
   border-color: var(--amber-700);
   background: rgba(242, 160, 7, 0.08);
 }
+
+/* Ver Panel.module.css: no celular o nome da faixa ganha o espaço. */
+@media (max-width: 560px) {
+  .chip {
+    display: none;
+  }
+}

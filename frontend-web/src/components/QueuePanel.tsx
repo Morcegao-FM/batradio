@@ -18,10 +18,12 @@ export default function QueuePanel({
   selected,
   onSelect,
   onAddFile,
+  onAbrirAcervo,
 }: {
   selected?: QueueItem
   onSelect: (item: QueueItem) => void
   onAddFile: (file: string, position: number) => void
+  onAbrirAcervo?: () => void
 }) {
   const [query, setQuery] = useState('')
   const q = useDebounced(query)
@@ -124,7 +126,14 @@ export default function QueuePanel({
           <span className={`${styles.kicker} ${styles.kickerRed}`}>⚡ No ar · Programação</span>
           <h2 className={styles.panelTitle}>Fila de Hoje</h2>
         </div>
-        <span className={styles.count}>{total.toLocaleString('pt-BR')} faixas</span>
+        <div className={styles.headerAcoes}>
+          <span className={styles.count}>{total.toLocaleString('pt-BR')} faixas</span>
+          {onAbrirAcervo && (
+            <button type="button" className={styles.buttonBrand} onClick={onAbrirAcervo}>
+              + Adicionar música
+            </button>
+          )}
+        </div>
       </header>
 
       <div className={styles.searchRow}>

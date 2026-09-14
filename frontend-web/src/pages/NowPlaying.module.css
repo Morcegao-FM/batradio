@@ -1,32 +1,69 @@
-/* Acervo em cima, fila embaixo — sempre, em qualquer largura. Lado a lado as
- * duas listas ficavam estreitas demais e o nome da faixa vivia truncado. */
-.columns {
+/* A tela é a fila. O acervo entra como coluna à direita quando você clica em
+ * "Adicionar música" — e é coluna de verdade, não sobreposição, para o arrastar
+ * do acervo para a fila continuar funcionando. */
+.layout {
   display: grid;
   grid-template-columns: 1fr;
-  grid-auto-rows: minmax(300px, 1fr);
   gap: var(--space-5);
   height: 100%;
   min-height: 0;
 }
 
-/* A partir daqui a navegação vai para o rodapé (ver Layout.module.css), então
-   as duas regras abaixo valem para tablet também, não só para celular. */
+.comAcervo {
+  grid-template-columns: 1fr minmax(360px, 420px);
+}
+
+.acervo {
+  display: flex;
+  min-height: 0;
+  position: relative;
+}
+
+.acervo > section {
+  flex: 1;
+  min-width: 0;
+}
+
+.fecharAcervo {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: 2;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: var(--text-xl);
+  line-height: 1;
+}
+
+.fecharAcervo:hover {
+  color: var(--text-strong);
+}
+
+/* Sem fundo escuro no desktop: ele bloquearia o arraste para a fila. */
+.fundoAcervo {
+  display: none;
+}
+
 @media (max-width: 900px) {
-  .columns {
-    /* Empilhados, os dois painéis não cabem na mesma tela de celular. Em vez
-     * de espremer os dois e deixar cada um com uma linha visível, cada painel
-     * ocupa quase a tela inteira e você rola de um para o outro. */
-    height: auto;
-    grid-auto-rows: minmax(min(78vh, 560px), auto);
+  /* Não há largura para duas colunas: o acervo vira folha sobre a tela. */
+  .comAcervo {
+    grid-template-columns: 1fr;
   }
 
-  .toast {
-    /* Precisa passar por cima do player E da navegação inferior. */
-    bottom: calc(var(--player-h) + 64px + var(--space-3));
-    left: var(--space-3);
-    right: var(--space-3);
-    transform: none;
-    text-align: center;
+  .fundoAcervo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 10, 9, 0.75);
+    z-index: 95;
+  }
+
+  .acervo {
+    position: fixed;
+    inset: var(--space-3);
+    z-index: 96;
   }
 }
 
@@ -43,4 +80,17 @@
   padding: var(--space-3) var(--space-5);
   font-size: var(--text-sm);
   z-index: 90;
+}
+
+/* A partir daqui a navegação vai para o rodapé (ver Layout.module.css), então
+   as duas regras abaixo valem para tablet também, não só para celular. */
+@media (max-width: 900px) {
+  .toast {
+    /* Precisa passar por cima do player E da navegação inferior. */
+    bottom: calc(var(--player-h) + 64px + var(--space-3));
+    left: var(--space-3);
+    right: var(--space-3);
+    transform: none;
+    text-align: center;
+  }
 }

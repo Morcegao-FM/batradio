@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Layout from '../components/Layout'
 import LibraryPanel from '../components/LibraryPanel'
@@ -13,6 +13,7 @@ export default function NowPlaying() {
   const [selectedSong, setSelectedSong] = useState<Song>()
   const [selectedQueueItem, setSelectedQueueItem] = useState<QueueItem>()
   const [addManySong, setAddManySong] = useState<Song>()
+  const [acervoAberto, setAcervoAberto] = useState(false)
   const [toast, setToast] = useState<string>()
   const queryClient = useQueryClient()
   const { status } = useStatus()
@@ -34,6 +35,17 @@ export default function NowPlaying() {
     add.mutate({ file: selectedSong.file, position })
   }
 
+  // Esc fecha o acervo. No celular ele ocupa a tela toda, e sem isso a única
+  // saída seria achar o botão de fechar.
+  useEffect(() => {
+    if (!acervoAberto) return
+    const aoTeclar = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setAcervoAberto(false)
+    }
+    window.addEventListener('keydown', aoTeclar)
+    return () => window.removeEventListener('keydown', aoTeclar)
+  }, [acervoAberto])
+
   const showToast = (msg: string) => {
     setToast(msg)
     setTimeout(() => setToast(undefined), 4000)
@@ -41,20 +53,41 @@ export default function NowPlaying() {
 
   return (
     <Layout title="Bat Radio" subtitle="Controle da programação ao vivo">
-      <div className={styles.columns}>
-        <LibraryPanel
-          selected={selectedSong}
-          onSelect={setSelectedSong}
-          canAdd={!!selectedSong && posicaoReferencia !== undefined && !add.isPending}
-          referenciaFila={!!selectedQueueItem}
-          onAdd={handleAdd}
-          onAddMany={setAddManySong}
-        />
+      <div className={`${styles.layout} ${acervoAberto ? styles.comAcervo : ''}`}>
         <QueuePanel
           selected={selectedQueueItem}
           onSelect={setSelectedQueueItem}
           onAddFile={(file, position) => add.mutate({ file, position })}
+          onAbrirAcervo={() => setAcervoAberto(true)}
         />
+
+        {acervoAberto && (
+          <>
+            {/* Fundo só existe no celular, onde o acervo cobre a tela. No
+                desktop ele é uma coluna de verdade, senão o arrastar do acervo
+                para a fila deixaria de funcionar. */}
+            <div className={styles.fundoAcervo} onClick={() => setAcervoAberto(false)} />
+            <aside className={styles.acervo}>
+              <button
+                type="button"
+                className={styles.fecharAcervo}
+                onClick={() => setAcervoAberto(false)}
+                aria-label="Fechar acervo"
+                title="Fechar acervo (Esc)"
+              >
+                ×
+              </button>
+              <LibraryPanel
+                selected={selectedSong}
+                onSelect={setSelectedSong}
+                canAdd={!!selectedSong && posicaoReferencia !== undefined && !add.isPending}
+                referenciaFila={!!selectedQueueItem}
+                onAdd={handleAdd}
+                onAddMany={setAddManySong}
+              />
+            </aside>
+          </>
+        )}
       </div>
 
       {addManySong && (

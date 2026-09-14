@@ -1,11 +1,13 @@
 .panel {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  /* Espaçamento apertado de propósito: cada linha de cromo do painel é uma
+   * faixa a menos na lista, e a lista é o trabalho. */
+  gap: var(--space-3);
   background: var(--surface-card);
   border: var(--border-width) solid var(--border-hairline);
   border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  padding: var(--space-4);
   min-height: 0;
   height: 100%;
 }
@@ -18,14 +20,25 @@
   border-top: var(--border-heavy) solid var(--brand);
 }
 
+/* Uma linha só: kicker e título lado a lado, contagem e ações na ponta. Antes
+   o kicker ocupava uma linha inteira acima do título. */
 .panelHeader {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.panelHeader > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .kicker {
+  flex-shrink: 0;
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   letter-spacing: var(--ls-label);
@@ -42,10 +55,18 @@
 
 .panelTitle {
   font-family: var(--font-display);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   text-transform: uppercase;
   letter-spacing: var(--ls-poster);
   color: var(--text-strong);
+  white-space: nowrap;
+}
+
+.headerAcoes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
 }
 
 .count {
@@ -61,7 +82,9 @@
 
 .searchRow {
   display: flex;
-  gap: var(--space-3);
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
 .searchRow .search {
@@ -71,7 +94,7 @@
 .actionsRow {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
@@ -354,6 +377,33 @@
   .row {
     gap: var(--space-2);
     padding: 0 var(--space-2);
+  }
+
+  /* Em 390px os quatro botões de ação (sempre visíveis no toque) espremiam o
+     título até zero: sobrava a linha sem dizer que faixa era. A miniatura e a
+     etiqueta de gênero saem para o nome caber — são o que menos importa numa
+     fila que você está operando. */
+  .avatar {
+    display: none;
+  }
+
+  .trackText {
+    min-width: 80px;
+  }
+
+  /* Contas para 390px: 16 de padding + 44 do horário + 80 do título + 4 botões
+     de 36 com gaps de 4 = 328. Sobra folga para a barra de rolagem. */
+  .timeCol {
+    width: 44px;
+  }
+
+  .rowActions {
+    gap: var(--space-1);
+  }
+
+  .rowActions button {
+    min-width: 36px;
+    padding: 0;
   }
 
   /* Horário previsto some: numa fila estreita, saber O QUE toca importa mais
