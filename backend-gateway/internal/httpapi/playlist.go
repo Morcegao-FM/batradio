@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/library"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/model"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/schedule"
 )
 
@@ -55,8 +56,22 @@ func (s *Server) handleGetPlaylist(w http.ResponseWriter, r *http.Request) {
 	if end > total {
 		end = total
 	}
+	// Só a página visível: a fila pode ter centenas de faixas e o teto do
+	// endpoint do site é 200 por chamada. `filtered` vem de
+	// schedule.ComputeTimes, que devolve slice nova a cada request — mexer nela
+	// não toca a fila em cache.
+	pagina := filtered[offset:end]
+	musicas := make([]model.Song, len(pagina))
+	for i := range pagina {
+		musicas[i] = pagina[i].Song
+	}
+	s.enriquecer(r.Context(), musicas)
+	for i := range pagina {
+		pagina[i].Song = musicas[i]
+	}
+
 	writeJSON(w, http.StatusOK, map[string]any{
-		"items":      filtered[offset:end],
+		"items":      pagina,
 		"total":      total,
 		"offset":     offset,
 		"limit":      limit,

@@ -58,6 +58,21 @@ function StreamMonitor({ url }: { url: string }) {
   )
 }
 
+// Capa da faixa, vinda do catálogo do site. Sem capa — ou com URL que falha —
+// cai no logo: o painel nunca fica com buraco na tela por causa do catálogo.
+function Capa({ src }: { src?: string }) {
+  const [falhou, setFalhou] = useState(false)
+  useEffect(() => setFalhou(false), [src])
+  return (
+    <img
+      src={src && !falhou ? src : logo}
+      alt=""
+      className={styles.thumb}
+      onError={() => setFalhou(true)}
+    />
+  )
+}
+
 export default function PlayerBar() {
   const { status } = useStatus()
   const { info } = useServerInfo()
@@ -80,14 +95,16 @@ export default function PlayerBar() {
       >
         {playing ? '❚❚' : '▶'}
       </button>
-      <img src={logo} alt="" className={styles.thumb} />
+      <Capa src={current?.imageUrl} />
       <div className={styles.trackInfo}>
         <span className={styles.nowLabel}>
           Tocando agora <Equalizer playing={!!playing} />
         </span>
         <span className={styles.track}>
-          <strong>{current?.title ?? '—'}</strong>
-          {current?.artist ? <span className={styles.artist}> — {current.artist}</span> : null}
+          <strong>{current?.displayName ?? current?.title ?? '—'}</strong>
+          {!current?.displayName && current?.artist ? (
+            <span className={styles.artist}> — {current.artist}</span>
+          ) : null}
         </span>
       </div>
       <div className={styles.right}>

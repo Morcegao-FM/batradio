@@ -9,6 +9,11 @@ export interface Song {
   time: number
   pos: number
   id: number
+  /** Vindos do catálogo do site pelo gateway; ausentes quando ele não conhece a faixa. */
+  imageUrl?: string
+  displayName?: string
+  year?: number
+  kind?: string
 }
 
 export interface QueueItem extends Song {

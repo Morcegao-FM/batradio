@@ -18,6 +18,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/auth"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/catalogo"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/config"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpapi"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpsec"
@@ -47,8 +48,13 @@ func main() {
 		log.Println("ATENÇÃO: DEV_MODE ativo — login sem Google, NÃO use em produção")
 	}
 
+	cat := catalogo.New(cfg.CatalogoURL, cfg.CatalogoChave, time.Hour)
+	if cfg.CatalogoURL == "" {
+		log.Println("catálogo do site não configurado — o painel roda sem capa")
+	}
+
 	nodeClient := node.New(cfg.NodeBackendURL, cfg.NodeAPIKey)
-	server := httpapi.NewServer(cfg, nodeClient)
+	server := httpapi.NewServer(cfg, nodeClient, cat)
 	oauth := auth.NewOAuth(cfg)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)

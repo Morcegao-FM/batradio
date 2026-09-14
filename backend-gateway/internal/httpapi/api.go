@@ -16,17 +16,25 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/auth"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/catalogo"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/config"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/library"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/model"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/node"
 )
 
+// catalogoLookup é o que o gateway usa do catálogo do website. Interface (e não
+// o tipo concreto) para o teste injetar um fake.
+type catalogoLookup interface {
+	Lookup(ctx context.Context, arquivos []string) map[string]catalogo.Info
+}
+
 type Server struct {
-	cfg    *config.Config
-	node   *node.Client
-	lib    *library.Index
-	poller *Poller
+	cfg      *config.Config
+	node     *node.Client
+	lib      *library.Index
+	poller   *Poller
+	catalogo catalogoLookup
 
 	// injetáveis em teste
 	now     func() time.Time
@@ -37,14 +45,15 @@ type Server struct {
 	queueLoaded bool
 }
 
-func NewServer(cfg *config.Config, n *node.Client) *Server {
+func NewServer(cfg *config.Config, n *node.Client, cat catalogoLookup) *Server {
 	return &Server{
-		cfg:     cfg,
-		node:    n,
-		lib:     library.NewIndex(),
-		poller:  NewPoller(n, 2*time.Second),
-		now:     time.Now,
-		randInt: rand.Intn,
+		cfg:      cfg,
+		node:     n,
+		lib:      library.NewIndex(),
+		poller:   NewPoller(n, 2*time.Second),
+		catalogo: cat,
+		now:      time.Now,
+		randInt:  rand.Intn,
 	}
 }
 
@@ -203,7 +212,62 @@ func (s *Server) handleStatus(w http.ResponseWriter, r *http.Request) {
 		writeNodeErr(w, err)
 		return
 	}
+	s.enriquecerStatus(r.Context(), &st)
 	writeJSON(w, http.StatusOK, st)
+}
+
+// enriquecer sobrepõe os dados de exibição do catálogo nas faixas dadas,
+// in-place. Silencioso por natureza: catálogo desligado ou fora do ar deixa as
+// faixas exatamente como vieram do MPD.
+func (s *Server) enriquecer(ctx context.Context, musicas []model.Song) {
+	if s.catalogo == nil || len(musicas) == 0 {
+		return
+	}
+
+	arquivos := make([]string, 0, len(musicas))
+	for _, m := range musicas {
+		if m.File != "" {
+			arquivos = append(arquivos, m.File)
+		}
+	}
+
+	info := s.catalogo.Lookup(ctx, arquivos)
+	for i := range musicas {
+		dados, ok := info[musicas[i].File]
+		if !ok {
+			continue
+		}
+		musicas[i].ImageURL = dados.ImagemURL
+		musicas[i].DisplayName = dados.NomeExibicao
+		musicas[i].Year = dados.Ano
+		musicas[i].Kind = dados.Tipo
+	}
+}
+
+// enriquecerStatus completa só a faixa atual e a próxima. Nunca a fila inteira:
+// o painel chama /api/status a cada 2 segundos.
+func (s *Server) enriquecerStatus(ctx context.Context, st *model.Status) {
+	var visiveis []model.Song
+	if st.Current != nil {
+		visiveis = append(visiveis, *st.Current)
+	}
+	if st.Next != nil {
+		visiveis = append(visiveis, *st.Next)
+	}
+	if len(visiveis) == 0 {
+		return
+	}
+
+	s.enriquecer(ctx, visiveis)
+
+	i := 0
+	if st.Current != nil {
+		st.Current = &visiveis[i]
+		i++
+	}
+	if st.Next != nil {
+		st.Next = &visiveis[i]
+	}
 }
 
 func (s *Server) handleLibrary(w http.ResponseWriter, r *http.Request) {
