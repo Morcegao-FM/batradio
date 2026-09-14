@@ -1,0 +1,51 @@
+# BatRadio Web — produção (batradio.morcegaofm.com.br).
+#
+# Sobe SOMENTE o gateway. O backend Node da porta 9320 já roda neste host e é a
+# interface do cliente Windows do Renato: este arquivo não o declara, não o
+# constrói e não o reinicia.
+#
+# Uso no servidor:
+#   docker compose -f docker-compose.main.yml up -d --wait
+#
+# Segredos vêm de um .env ao lado deste arquivo (nunca commitado).
+# Ver docs/DEPLOY.md.
+services:
+  gateway:
+    image: ghcr.io/morcegao-fm/batradio-gateway:${TAG:-latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: "8080"
+      # NODE_BACKEND_URL e NODE_API_KEY vêm do .env. A chave tem de ser a MESMA
+      # que o cliente do Renato usa, para nada no Node precisar mudar.
+      OAUTH_REDIRECT_URL: "https://batradio.morcegaofm.com.br/auth/callback"
+      ALLOWED_EMAILS: "aguergolet@gmail.com,morcegaofm@gmail.com"
+      COOKIE_SECURE: "true"
+      DEV_MODE: "false"
+      # API do website na mesma rede, para capa e nome de exibição.
+      CATALOGO_URL: "${CATALOGO_URL:-http://api:8080}"
+    # Sem "ports": quem publica é o Traefik. Nada novo aberto no host.
+    expose:
+      - "8080"
+    networks:
+      - telogreug
+    healthcheck:
+      # A imagem é distroless (sem shell, sem curl), então o healthcheck é o
+      # próprio binário: --health-check faz um GET em /healthz e sai 0 ou 1.
+      test: ["CMD", "/batradio-gateway", "--health-check"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=telogreug"
+      - "traefik.http.routers.batradio.rule=Host(`batradio.morcegaofm.com.br`)"
+      - "traefik.http.routers.batradio.entrypoints=websecure,web"
+      - "traefik.http.routers.batradio.tls=true"
+      - "traefik.http.routers.batradio.tls.certresolver=letsencrypt"
+      - "traefik.http.services.batradio.loadbalancer.server.port=8080"
+
+networks:
+  telogreug:
+    external: true

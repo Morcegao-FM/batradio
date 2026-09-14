@@ -120,3 +120,30 @@ func TestMiddleware(t *testing.T) {
 		t.Errorf("valid: code=%d", rec.Code)
 	}
 }
+
+func TestCookieNamePorModo(t *testing.T) {
+	if got := CookieName(true); got != "__Host-batradio_session" {
+		t.Errorf("com Secure esperava prefixo __Host-, veio %q", got)
+	}
+	// O prefixo __Host- exige Secure; em dev (http://localhost) o navegador
+	// recusaria o cookie e o login nunca fecharia.
+	if got := CookieName(false); got != "batradio_session" {
+		t.Errorf("sem Secure esperava nome simples, veio %q", got)
+	}
+}
+
+func TestLerSessaoAceitaOsDoisNomes(t *testing.T) {
+	for _, nome := range []string{SessionCookieHost, SessionCookie} {
+		r := httptest.NewRequest("GET", "/api/status", nil)
+		r.AddCookie(&http.Cookie{Name: nome, Value: "abc"})
+		valor, ok := LerSessao(r)
+		if !ok || valor != "abc" {
+			t.Errorf("%s: esperava ler abc, veio %q ok=%v", nome, valor, ok)
+		}
+	}
+
+	r := httptest.NewRequest("GET", "/api/status", nil)
+	if _, ok := LerSessao(r); ok {
+		t.Error("sem cookie não pode reportar sessão")
+	}
+}

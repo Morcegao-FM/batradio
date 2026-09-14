@@ -18,13 +18,31 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/auth"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/catalogo"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/config"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpapi"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpsec"
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/node"
 	"github.com/Morcegao-FM/batradio/backend-gateway/web"
 )
 
 func main() {
+	// Healthcheck do container: a imagem é distroless (sem shell, sem curl),
+	// então o próprio binário faz o GET e traduz em código de saída.
+	if len(os.Args) > 1 && os.Args[1] == "--health-check" {
+		porta := os.Getenv("PORT")
+		if porta == "" {
+			porta = "8080"
+		}
+		cliente := &http.Client{Timeout: 3 * time.Second}
+		resp, err := cliente.Get("http://127.0.0.1:" + porta + "/healthz")
+		if err != nil || resp.StatusCode != http.StatusOK {
+			os.Exit(1)
+		}
+		resp.Body.Close()
+		os.Exit(0)
+	}
+
 	// Fora do Docker, carrega o .env do diretório atual ou da raiz do repo
 	// (variáveis já exportadas no ambiente têm precedência).
 	for _, path := range []string{".env", "../.env"} {
@@ -46,8 +64,13 @@ func main() {
 		log.Println("ATENÇÃO: DEV_MODE ativo — login sem Google, NÃO use em produção")
 	}
 
+	cat := catalogo.New(cfg.CatalogoURL, cfg.CatalogoChave, time.Hour)
+	if cfg.CatalogoURL == "" {
+		log.Println("catálogo do site não configurado — o painel roda sem capa")
+	}
+
 	nodeClient := node.New(cfg.NodeBackendURL, cfg.NodeAPIKey)
-	server := httpapi.NewServer(cfg, nodeClient)
+	server := httpapi.NewServer(cfg, nodeClient, cat)
 	oauth := auth.NewOAuth(cfg)
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
@@ -76,6 +99,9 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
+	// CookieSecure é o proxy de "estou atrás de https": é exatamente a condição
+	// em que o HSTS deve sair.
+	r.Use(httpsec.Headers(cfg.StreamURL, cfg.CookieSecure))
 	r.Mount("/", server.Routes(oauth))
 	r.NotFound(spaHandler())
 

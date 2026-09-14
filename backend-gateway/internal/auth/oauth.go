@@ -14,6 +14,7 @@ import (
 	"golang.org/x/oauth2/endpoints"
 
 	"github.com/Morcegao-FM/batradio/backend-gateway/internal/config"
+	"github.com/Morcegao-FM/batradio/backend-gateway/internal/httpsec"
 )
 
 // DevEmail é a identidade usada pelo login de desenvolvimento (DEV_MODE=true).
@@ -49,8 +50,11 @@ func (o *OAuth) SetEndpoints(authURL, tokenURL, userinfoURL string) {
 
 // Register adiciona as rotas de autenticação a um router existente.
 func (o *OAuth) Register(r chi.Router) {
-	r.Get("/auth/login", o.handleLogin)
-	r.Get("/auth/callback", o.handleCallback)
+	// 10 tentativas por minuto e por IP: folga para quem erra a conta, teto
+	// para quem está sondando o callback.
+	limite := httpsec.NewLimiter(10, time.Minute)
+	r.With(limite.Middleware).Get("/auth/login", o.handleLogin)
+	r.With(limite.Middleware).Get("/auth/callback", o.handleCallback)
 	r.Post("/auth/logout", o.handleLogout)
 }
 
@@ -60,19 +64,16 @@ func (o *OAuth) Routes() chi.Router {
 	return r
 }
 
-func secureCookie(r *http.Request) bool {
-	return r.TLS != nil || r.Header.Get("X-Forwarded-Proto") == "https"
-}
-
 func (o *OAuth) setSessionCookie(w http.ResponseWriter, r *http.Request, email string) {
 	token := SignSession(email, time.Now().Add(SessionTTL), o.cfg.SessionSecret)
+	secure := o.cfg.CookieSecure
 	http.SetCookie(w, &http.Cookie{
-		Name:     SessionCookie,
+		Name:     CookieName(secure),
 		Value:    token,
 		Path:     "/",
 		MaxAge:   int(SessionTTL.Seconds()),
 		HttpOnly: true,
-		Secure:   secureCookie(r),
+		Secure:   secure,
 		SameSite: http.SameSiteLaxMode,
 	})
 }
@@ -95,7 +96,7 @@ func (o *OAuth) handleLogin(w http.ResponseWriter, r *http.Request) {
 		Path:     "/auth",
 		MaxAge:   600,
 		HttpOnly: true,
-		Secure:   secureCookie(r),
+		Secure:   o.cfg.CookieSecure,
 		SameSite: http.SameSiteLaxMode,
 	})
 	url := o.oauth.AuthCodeURL(state, oauth2.SetAuthURLParam("prompt", "select_account"))
@@ -145,14 +146,19 @@ func (o *OAuth) handleCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (o *OAuth) handleLogout(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, &http.Cookie{
-		Name:     SessionCookie,
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
-	})
+	// Expira os dois nomes: um cookie gravado antes de o Secure entrar não pode
+	// sobreviver ao logout.
+	for _, nome := range []string{SessionCookieHost, SessionCookie} {
+		http.SetCookie(w, &http.Cookie{
+			Name:     nome,
+			Value:    "",
+			Path:     "/",
+			MaxAge:   -1,
+			HttpOnly: true,
+			Secure:   o.cfg.CookieSecure,
+			SameSite: http.SameSiteLaxMode,
+		})
+	}
 	w.WriteHeader(http.StatusNoContent)
 }
 

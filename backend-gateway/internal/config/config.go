@@ -18,6 +18,15 @@ type Config struct {
 	SessionSecret      []byte
 	StreamURL          string
 	DevMode            bool
+
+	// CookieSecure marca o cookie de sessão como Secure. Padrão: ligado fora do
+	// DEV_MODE. COOKIE_SECURE=true/false força explicitamente.
+	CookieSecure bool
+
+	// API do website, que serve o catálogo de faixas (capa, artista, ano).
+	// Vazios deixam o enriquecimento desligado — o painel funciona sem ele.
+	CatalogoURL   string
+	CatalogoChave string
 }
 
 func Load(getenv func(string) string) (*Config, error) {
@@ -30,6 +39,8 @@ func Load(getenv func(string) string) (*Config, error) {
 		OAuthRedirectURL:   getenv("OAUTH_REDIRECT_URL"),
 		SessionSecret:      []byte(getenv("SESSION_SECRET")),
 		StreamURL:          getenv("STREAM_URL"),
+		CatalogoURL:        strings.TrimRight(getenv("CATALOGO_URL"), "/"),
+		CatalogoChave:      getenv("CATALOGO_CHAVE"),
 		DevMode:            strings.EqualFold(getenv("DEV_MODE"), "true"),
 	}
 	if c.Port == "" {
@@ -62,5 +73,19 @@ func Load(getenv func(string) string) (*Config, error) {
 			return nil, fmt.Errorf("GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET e OAUTH_REDIRECT_URL são obrigatórios fora do DEV_MODE")
 		}
 	}
+	if c.DevMode && strings.HasPrefix(strings.ToLower(c.OAuthRedirectURL), "https://") {
+		return nil, fmt.Errorf(
+			"DEV_MODE=true com OAUTH_REDIRECT_URL https:// — isso subiria um painel " +
+				"de rádio com login falso em produção; desligue DEV_MODE")
+	}
+
+	c.CookieSecure = !c.DevMode
+	switch strings.ToLower(strings.TrimSpace(getenv("COOKIE_SECURE"))) {
+	case "true":
+		c.CookieSecure = true
+	case "false":
+		c.CookieSecure = false
+	}
+
 	return c, nil
 }

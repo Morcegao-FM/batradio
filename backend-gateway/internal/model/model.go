@@ -53,6 +53,13 @@ type Song struct {
 	Time   int    `json:"time"`
 	Pos    int    `json:"pos"`
 	ID     int    `json:"id"`
+
+	// Preenchidos pelo gateway a partir do catálogo do website; o Node/MPD
+	// nunca manda estes campos. omitempty para não inchar a lista do acervo.
+	ImageURL    string `json:"imageUrl,omitempty"`
+	DisplayName string `json:"displayName,omitempty"`
+	Year        int    `json:"year,omitempty"`
+	Kind        string `json:"kind,omitempty"`
 }
 
 type Status struct {

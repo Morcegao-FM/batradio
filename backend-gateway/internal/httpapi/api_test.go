@@ -161,7 +161,8 @@ func newTestServer(t *testing.T, nodeURL string) *Server {
 		NodeBackendURL: nodeURL,
 		NodeAPIKey:     "key",
 	}
-	s := NewServer(cfg, node.New(nodeURL, "key"))
+	// nil = sem catálogo, que é o que estes testes querem.
+	s := NewServer(cfg, node.New(nodeURL, "key"), nil)
 	s.now = func() time.Time { return testNow }
 	s.randInt = func(n int) int { return 1 }
 	return s

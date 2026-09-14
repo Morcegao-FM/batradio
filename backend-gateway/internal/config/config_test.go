@@ -61,6 +61,9 @@ func TestLoadMissingGoogleOutsideDevMode(t *testing.T) {
 		t.Fatal("expected error for missing google credentials")
 	}
 	env["DEV_MODE"] = "true"
+	// Em dev o login é local; o redirect https só existe em produção, e agora
+	// Load recusa a combinação DEV_MODE + https (login falso no ar).
+	env["OAUTH_REDIRECT_URL"] = ""
 	c, err := Load(fakeEnv(env))
 	if err != nil {
 		t.Fatalf("dev mode should allow missing google creds: %v", err)
@@ -97,5 +100,58 @@ func TestLoadNoEmails(t *testing.T) {
 	env["ALLOWED_EMAILS"] = " , "
 	if _, err := Load(fakeEnv(env)); err == nil {
 		t.Fatal("expected error for empty allowlist")
+	}
+}
+
+func TestLoadRecusaDevModeComRedirectHTTPS(t *testing.T) {
+	env := validEnv()
+	env["DEV_MODE"] = "true"
+	// validEnv já traz OAUTH_REDIRECT_URL https.
+
+	if _, err := Load(fakeEnv(env)); err == nil {
+		t.Fatal("esperava erro: DEV_MODE com redirect https é login falso em produção")
+	} else if !strings.Contains(err.Error(), "DEV_MODE") {
+		t.Fatalf("erro deveria citar DEV_MODE, veio: %v", err)
+	}
+}
+
+func TestCookieSecurePadraoPorModo(t *testing.T) {
+	prod, err := Load(fakeEnv(validEnv()))
+	if err != nil {
+		t.Fatalf("produção: %v", err)
+	}
+	if !prod.CookieSecure {
+		t.Error("fora do DEV_MODE o cookie tem de ser Secure por padrão")
+	}
+
+	dev := validEnv()
+	dev["DEV_MODE"] = "true"
+	dev["OAUTH_REDIRECT_URL"] = ""
+	dc, err := Load(fakeEnv(dev))
+	if err != nil {
+		t.Fatalf("dev: %v", err)
+	}
+	if dc.CookieSecure {
+		t.Error("em DEV_MODE (http://localhost) o cookie Secure impediria o login")
+	}
+
+	forcado := validEnv()
+	forcado["COOKIE_SECURE"] = "false"
+	fc, err := Load(fakeEnv(forcado))
+	if err != nil {
+		t.Fatalf("forçado: %v", err)
+	}
+	if fc.CookieSecure {
+		t.Error("COOKIE_SECURE=false deve vencer o padrão")
+	}
+}
+
+func TestCatalogoEhOpcional(t *testing.T) {
+	c, err := Load(fakeEnv(validEnv()))
+	if err != nil {
+		t.Fatalf("catálogo não configurado não pode impedir o gateway de subir: %v", err)
+	}
+	if c.CatalogoURL != "" || c.CatalogoChave != "" {
+		t.Error("sem env, o catálogo tem de vir desligado")
 	}
 }
