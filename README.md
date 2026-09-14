@@ -23,10 +23,13 @@ Gateway Go (backend-gateway/)  ──►  Backend Node (backend-server/)  ──
 - **`frontend-web/`** — SPA em React + TypeScript com o design system Morcegão
   FM: Tocando Agora (acervo + fila virtualizadas), Playlist e Arquivos,
   Configurações e o modal "Inserir música várias vezes".
-- **`backend-server/`** — backend Node legado que conversa com o MPD. Continua
-  como está, mas passa a rodar apenas na rede interna do Docker.
-- **`frontend-windows-client/`** — cliente Windows Forms **descontinuado**,
-  substituído pelo frontend web.
+- **`backend-server/`** — backend Node legado que conversa com o MPD. **Em
+  produção ele já roda no servidor da rádio, na porta 9320, e é a interface do
+  cliente Windows do Renato**: o compose de produção não o declara nem o
+  reinicia. Este diretório serve ao ambiente de desenvolvimento.
+- **`frontend-windows-client/`** — cliente Windows Forms, **em produção na
+  máquina do operador**. O frontend web ainda não o substituiu; o contrato do
+  Node na porta 9320 existe para ele e não pode mudar.
 
 ## Rodando em produção (Docker Compose)
 
@@ -43,6 +46,10 @@ Gateway Go (backend-gateway/)  ──►  Backend Node (backend-server/)  ──
 4. Suba: `docker compose up -d --build`.
 5. Aponte seu proxy reverso com HTTPS (Caddy, Nginx, Traefik) para a porta
    `8080`. O domínio precisa ser o mesmo do `OAUTH_REDIRECT_URL`.
+
+> **No servidor da Morcegão FM o procedimento é outro**, porque o backend Node
+> já roda lá e não pode ser reiniciado: use `docker-compose.main.yml`, que sobe
+> só o gateway. Ver [`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 Somente os e-mails em `ALLOWED_EMAILS` conseguem entrar (hoje:
 `aguergolet@gmail.com` e `morcegaofm@gmail.com`).

@@ -27,6 +27,22 @@ import (
 )
 
 func main() {
+	// Healthcheck do container: a imagem é distroless (sem shell, sem curl),
+	// então o próprio binário faz o GET e traduz em código de saída.
+	if len(os.Args) > 1 && os.Args[1] == "--health-check" {
+		porta := os.Getenv("PORT")
+		if porta == "" {
+			porta = "8080"
+		}
+		cliente := &http.Client{Timeout: 3 * time.Second}
+		resp, err := cliente.Get("http://127.0.0.1:" + porta + "/healthz")
+		if err != nil || resp.StatusCode != http.StatusOK {
+			os.Exit(1)
+		}
+		resp.Body.Close()
+		os.Exit(0)
+	}
+
 	// Fora do Docker, carrega o .env do diretório atual ou da raiz do repo
 	// (variáveis já exportadas no ambiente têm precedência).
 	for _, path := range []string{".env", "../.env"} {

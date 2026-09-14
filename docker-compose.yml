@@ -1,11 +1,16 @@
-# BatRadio Web — gateway Go (público) + backend Node legado (rede interna).
+# BatRadio Web — ambiente de DESENVOLVIMENTO/LOCAL.
+#
+# NÃO use este arquivo em produção. Ele sobe um backend Node próprio, e no
+# servidor da rádio já existe um rodando na porta 9320 — o que o cliente Windows
+# do Renato usa. Dois processos falando com o mesmo MPD, ou a 9320 trocando de
+# dono, derrubam a operação dele.
+#
+# Produção: docker-compose.main.yml (só o gateway). Ver docs/DEPLOY.md.
+#
 # 1. Copie backend-gateway/.env.example para .env e preencha.
 # 2. Copie backend-server/config.template.json para backend-server/config.json
 #    (aponte para o MPD e defina o apiKey — o mesmo de NODE_API_KEY no .env).
 # 3. docker compose up -d --build
-#
-# TLS: exponha a porta 8080 apenas ao proxy reverso do host (Caddy/Nginx) com
-# HTTPS no domínio do OAUTH_REDIRECT_URL.
 services:
   node-backend:
     build: ./backend-server
