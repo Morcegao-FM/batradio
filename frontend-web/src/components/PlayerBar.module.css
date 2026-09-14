@@ -180,3 +180,48 @@
   color: var(--text-strong);
   border-color: var(--brand);
 }
+
+/* Compacto: a barra deixa de ter altura fixa e quebra em duas linhas — faixa
+   em cima, controles embaixo. Com altura travada em 84px o conteúdo saía pela
+   borda assim que o nome da música crescia. */
+@media (max-width: 900px) {
+  .player {
+    height: auto;
+    min-height: var(--player-h);
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .trackInfo {
+    /* Força a quebra: faixa ocupa a primeira linha inteira. */
+    flex-basis: 100%;
+    order: -1;
+  }
+
+  .right {
+    margin-left: auto;
+  }
+
+  /* O slider de volume do monitor é o primeiro a sair: é conveniência, e o
+     celular já tem os botões de volume do aparelho. O botão de ouvir fica. */
+  .volume {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .playButton {
+    width: var(--touch-target);
+    height: var(--touch-target);
+  }
+
+  .thumb {
+    width: 40px;
+    height: 40px;
+  }
+
+  .editButton {
+    padding: 0 var(--space-3);
+  }
+}

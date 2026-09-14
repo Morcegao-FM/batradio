@@ -119,6 +119,15 @@
   --header-h: 72px;
   --player-h: 84px;
 
+  /* Breakpoints do painel. 900px é onde a sidebar de 200px deixa de caber ao
+   * lado de duas colunas; 560px é o celular de pé. Use estes dois e só estes,
+   * para o layout não virar uma colcha de retalhos. */
+  --bp-compacto: 900px;
+  --bp-celular: 560px;
+
+  /* Alvo de toque do design system da Morcegão FM. */
+  --touch-target: 44px;
+
   /* --- Bordas, sombras e glows --- */
   --radius-xs: 2px;
   --radius-sm: 4px;

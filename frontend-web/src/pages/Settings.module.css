@@ -113,3 +113,10 @@
   font-size: var(--text-sm);
   color: var(--live-400);
 }
+
+@media (max-width: 560px) {
+  /* Mesmo motivo do Playlists: 340px fixos não cabem num celular de pé. */
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

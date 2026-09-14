@@ -13,6 +13,27 @@
   }
 }
 
+/* A partir daqui a navegação vai para o rodapé (ver Layout.module.css), então
+   as duas regras abaixo valem para tablet também, não só para celular. */
+@media (max-width: 900px) {
+  .columns {
+    /* Empilhados, os dois painéis não cabem na mesma tela de celular. Em vez
+     * de espremer os dois e deixar cada um com uma linha visível, cada painel
+     * ocupa quase a tela inteira e você rola de um para o outro. */
+    height: auto;
+    grid-auto-rows: minmax(min(78vh, 560px), auto);
+  }
+
+  .toast {
+    /* Precisa passar por cima do player E da navegação inferior. */
+    bottom: calc(var(--player-h) + 64px + var(--space-3));
+    left: var(--space-3);
+    right: var(--space-3);
+    transform: none;
+    text-align: center;
+  }
+}
+
 .toast {
   position: fixed;
   bottom: calc(var(--player-h) + var(--space-4));

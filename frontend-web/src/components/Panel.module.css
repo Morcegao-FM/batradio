@@ -336,3 +336,29 @@
     transform: rotate(360deg);
   }
 }
+
+/* Sem hover não há como revelar os botões da linha: num celular eles ficariam
+   inalcançáveis. Em aparelho de toque, sempre visíveis. */
+@media (hover: none) {
+  .rowActions {
+    display: flex;
+  }
+
+  .rowActions button {
+    min-width: var(--touch-target);
+    min-height: var(--touch-target);
+  }
+}
+
+@media (max-width: 560px) {
+  .row {
+    gap: var(--space-2);
+    padding: 0 var(--space-2);
+  }
+
+  /* Horário previsto some: numa fila estreita, saber O QUE toca importa mais
+     que quando. O horário continua no desktop e no tooltip. */
+  .timeCol small {
+    display: none;
+  }
+}

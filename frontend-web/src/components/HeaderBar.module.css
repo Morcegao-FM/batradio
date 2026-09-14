@@ -72,3 +72,26 @@
   opacity: 0.6;
   cursor: wait;
 }
+
+@media (max-width: 900px) {
+  .header {
+    height: auto;
+    min-height: var(--header-h);
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .titles {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .title {
+    font-size: var(--text-xl);
+  }
+
+  /* Sem nowrap o subtítulo cabe; com nowrap ele empurrava a barra na horizontal. */
+  .subtitle {
+    white-space: normal;
+  }
+}

@@ -5,6 +5,8 @@
   display: grid;
   place-items: center;
   z-index: 100;
+  padding: var(--space-4);
+  overflow-y: auto;
 }
 
 .dialog {
@@ -139,4 +141,27 @@
 
 .confirm:disabled {
   opacity: 0.6;
+}
+
+@media (max-width: 560px) {
+  .dialog {
+    width: min(480px, 100%);
+    max-height: calc(100dvh - 2 * var(--space-4));
+    overflow-y: auto;
+    padding: var(--space-5);
+  }
+
+  .fields {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancel,
+  .confirm {
+    width: 100%;
+    min-height: var(--touch-target);
+  }
 }

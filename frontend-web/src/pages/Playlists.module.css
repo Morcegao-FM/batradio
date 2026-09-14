@@ -167,3 +167,15 @@
   font-size: var(--text-sm);
   z-index: 90;
 }
+
+@media (max-width: 560px) {
+  /* minmax(280px, 1fr) estoura em tela de 320px com padding: o min() faz a
+     coluna encolher junto em vez de forçar rolagem horizontal. */
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  }
+
+  .select {
+    min-width: 0;
+  }
+}

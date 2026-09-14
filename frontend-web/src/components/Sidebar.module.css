@@ -120,3 +120,56 @@
   font-size: var(--text-2xs);
   color: var(--text-faint);
 }
+
+/* Compacto: vira barra inferior. `order: 2` a joga para baixo do conteúdo
+   (no DOM ela vem primeiro, para leitor de tela encontrar a navegação cedo). */
+@media (max-width: 900px) {
+  .sidebar {
+    order: 2;
+    width: 100%;
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-right: none;
+    border-top: var(--border-width) solid var(--border-hairline);
+  }
+
+  /* Logo, card de AO VIVO e rodapé são contexto, não navegação: o estado do
+     servidor continua visível no player, que fica logo acima. */
+  .logo,
+  .liveCard,
+  .footer,
+  .navLabel {
+    display: none;
+  }
+
+  .nav {
+    flex: 1;
+    flex-direction: row;
+    gap: var(--space-2);
+  }
+
+  .navItem {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--space-1);
+    min-height: var(--touch-target);
+    padding: var(--space-2);
+    text-align: center;
+    font-size: var(--text-2xs);
+    letter-spacing: var(--ls-caps);
+  }
+}
+
+@media (max-width: 560px) {
+  /* O rótulo continua visível, quebrando em duas linhas. Nav só de ícone seria
+     pior justamente para o público 50–60+ da rádio. */
+  .navItem {
+    padding: var(--space-1);
+    line-height: var(--lh-snug);
+    letter-spacing: 0;
+    hyphens: auto;
+  }
+}

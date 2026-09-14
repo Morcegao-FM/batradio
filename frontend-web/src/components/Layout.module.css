@@ -8,7 +8,12 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  /* min-width para o eixo horizontal (sidebar ao lado), min-height para o
+   * vertical (sidebar embaixo, no mobile). Sem o min-height o conteúdo empurra
+   * a navegação e o player para fora da viewport: item de flex tem tamanho
+   * mínimo automático igual ao do conteúdo, e aqui o conteúdo é uma lista longa. */
   min-width: 0;
+  min-height: 0;
 }
 
 .banner {
@@ -26,4 +31,26 @@
   min-height: 0;
   overflow: auto;
   padding: var(--space-5) var(--space-6);
+}
+
+/* Compacto: a sidebar sai da lateral e vira barra de navegação embaixo, sob o
+   player. Em tela de celular não sobra largura para 200px fixos de menu. */
+@media (max-width: 900px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .content {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 560px) {
+  .content {
+    padding: var(--space-3);
+  }
+
+  .banner {
+    font-size: var(--text-xs);
+  }
 }
