@@ -1,0 +1,164 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 10, 9, 0.75);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+.dialog {
+  width: min(520px, 100%);
+  /* O formulário é alto; em tela baixa ele rola dentro do próprio diálogo em
+   * vez de estourar a viewport. */
+  max-height: calc(100dvh - 2 * var(--space-4));
+  overflow-y: auto;
+  background: var(--surface-card);
+  border: var(--border-width) solid var(--brand);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.kicker {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-poster);
+  color: var(--text-strong);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.arquivo {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--text-faint);
+  background: var(--surface-raised);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  /* Caminho do MPD é longo e não tem espaço: sem isto a caixa estica e a tela
+   * rola na horizontal no celular. */
+  overflow-wrap: anywhere;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.field span {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--ls-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.field input,
+.field select {
+  /* 48px em campo de formulário: regra do design system, e o público ouve no
+   * celular. O piso de 16px vem de styles/base.css. */
+  min-height: 48px;
+  width: 100%;
+}
+
+.linha {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.previa {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: var(--border-width) solid var(--border-hairline);
+  align-self: start;
+}
+
+.error {
+  color: var(--brand);
+  font-size: var(--text-sm);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.secondary,
+.primary {
+  font-family: var(--font-heading);
+  font-weight: var(--fw-semibold);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  min-height: var(--touch-target, 44px);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+}
+
+.secondary {
+  color: var(--text-muted);
+}
+
+.secondary:hover {
+  color: var(--text-strong);
+}
+
+.primary {
+  background: var(--brand);
+  color: var(--text-on-accent);
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Celular: os dois campos lado a lado empilham, e os botões ocupam a largura
+   toda — alvo de toque confortável em vez de dois botõezinhos no canto. */
+@media (max-width: 480px) {
+  .dialog {
+    padding: var(--space-5);
+  }
+
+  .linha {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .secondary,
+  .primary {
+    width: 100%;
+  }
+}

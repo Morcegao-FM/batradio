@@ -62,9 +62,21 @@ O BatRadio controla o que está no ar. Quem entra nele muda a transmissão.
 Capa, artista, título e ano vivem na tabela `musica_catalogo` da API .NET, e são
 corrigidos à mão na Batcaverna.
 
-- O BatRadio lê por `POST /api/servico/musicas/lookup` com header
-  `X-Servico-Key`. **Somente leitura.** Não escreve no banco do website, não
-  cria linha, não chama o iTunes.
+- O BatRadio lê por `POST /api/servico/musicas/lookup` e corrige por
+  `PUT /api/servico/musicas/por-arquivo`, ambos com header `X-Servico-Key`.
+- **Corrige linha que existe; nunca cria.** Faixa sem linha no catálogo devolve
+  404. O acervo do MPD tem dezenas de milhares de faixas e não pode entrar no
+  catálogo por ação do BatRadio — quem cria linha é o sync do próprio site, a
+  partir do que tocou.
+- **Toda escrita carrega autor.** O gateway manda o e-mail da sessão como
+  `editadoPor`, e o website grava em `musica_catalogo.editado_por`. O autor vem
+  SEMPRE da sessão, nunca do corpo do request: é a auditoria que sustenta o
+  website aceitar escrita por chave de serviço. Se você acrescentar outra rota
+  de escrita, ela carrega autor também.
+- **Editar trava o enriquecimento** daquela faixa (`editado_em`), senão o iTunes
+  desfaria a correção no ciclo seguinte. Consequência: edição errada não se
+  conserta sozinha — só pelo botão Restaurar da Batcaverna.
+- O BatRadio não chama o iTunes e não escreve em nenhuma outra tabela.
 - Capa é enfeite; o painel é operação. `internal/catalogo` nunca devolve erro:
   site fora do ar vira placeholder, e o controle do MPD segue.
 - Só a faixa atual, a próxima e a página visível da fila são enriquecidas. Não

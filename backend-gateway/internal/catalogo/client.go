@@ -10,6 +10,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -161,4 +163,71 @@ func (c *Client) buscarLote(ctx context.Context, lote []string, resultado map[st
 		info, ok := encontrados[arquivo]
 		c.cache[arquivo] = entrada{info: info, encontrou: ok, em: agora}
 	}
+}
+
+// Edicao são os campos corrigíveis pelo painel — os mesmos que a Batcaverna
+// expõe, para as duas telas não divergirem.
+type Edicao struct {
+	Artista      string `json:"artista"`
+	Titulo       string `json:"titulo"`
+	Ano          int    `json:"ano"`
+	NomeExibicao string `json:"nomeExibicao"`
+	ImagemURL    string `json:"imagemUrl"`
+	Tipo         string `json:"tipo"`
+}
+
+type edicaoCorpo struct {
+	Arquivo    string `json:"arquivo"`
+	EditadoPor string `json:"editadoPor"`
+	Edicao
+}
+
+// Editar corrige a faixa no catálogo do website.
+//
+// Diferente de Lookup, devolve erro: capa faltando é enfeite, mas quem clicou
+// em salvar precisa saber que não salvou. `editadoPor` é o e-mail da sessão —
+// é a auditoria que justifica o website aceitar escrita por chave de serviço.
+func (c *Client) Editar(ctx context.Context, arquivo, editadoPor string, e Edicao) error {
+	if !c.ligado() {
+		return errors.New("catálogo do site não configurado neste gateway")
+	}
+	if arquivo == "" {
+		return errors.New("arquivo é obrigatório")
+	}
+	if editadoPor == "" {
+		return errors.New("editadoPor é obrigatório")
+	}
+
+	corpo, err := json.Marshal(edicaoCorpo{Arquivo: arquivo, EditadoPor: editadoPor, Edicao: e})
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut,
+		c.baseURL+"/api/servico/musicas/por-arquivo", bytes.NewReader(corpo))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Servico-Key", c.chave)
+
+	resp, err := c.http.Do(req)
+	if err != nil {
+		return fmt.Errorf("catálogo indisponível: %w", err)
+	}
+	defer resp.Body.Close()
+
+	switch resp.StatusCode {
+	case http.StatusOK:
+	case http.StatusNotFound:
+		return errors.New("essa faixa ainda não está no catálogo do site; ela entra sozinha em até 30 segundos")
+	default:
+		return fmt.Errorf("catálogo respondeu %d", resp.StatusCode)
+	}
+
+	// Sem isto a correção só apareceria quando o TTL vencesse.
+	c.mu.Lock()
+	delete(c.cache, arquivo)
+	c.mu.Unlock()
+	return nil
 }

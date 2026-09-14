@@ -161,3 +161,22 @@
   border: none;
   background: transparent;
 }
+
+.editButton {
+  font-family: var(--font-heading);
+  font-weight: var(--fw-semibold);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--ls-caps);
+  color: var(--text-muted);
+  border: var(--border-width) solid var(--border-hairline);
+  border-radius: var(--radius-md);
+  min-height: 44px;
+  padding: 0 var(--space-4);
+  flex-shrink: 0;
+}
+
+.editButton:hover {
+  color: var(--text-strong);
+  border-color: var(--brand);
+}

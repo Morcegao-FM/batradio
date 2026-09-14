@@ -161,3 +161,73 @@ func TestLookupRespeitaTetoDe200PorChamada(t *testing.T) {
 		}
 	}
 }
+
+func TestEditarMandaChaveEAutorEInvalidaCache(t *testing.T) {
+	var recebido struct {
+		Arquivo    string `json:"arquivo"`
+		EditadoPor string `json:"editadoPor"`
+		Titulo     string `json:"titulo"`
+	}
+	var chave string
+	var lookups int
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		chave = r.Header.Get("X-Servico-Key")
+		if r.Method == http.MethodPut {
+			json.NewDecoder(r.Body).Decode(&recebido)
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		lookups++
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(`[{"arquivo":"a.mp3","titulo":"antigo"}]`))
+	}))
+	defer srv.Close()
+
+	c := New(srv.URL, "chave", time.Hour)
+
+	// Popula o cache.
+	c.Lookup(context.Background(), []string{"a.mp3"})
+	if lookups != 1 {
+		t.Fatalf("esperava 1 lookup, veio %d", lookups)
+	}
+
+	if err := c.Editar(context.Background(), "a.mp3", "aguergolet@gmail.com",
+		Edicao{Titulo: "Back in Black"}); err != nil {
+		t.Fatalf("Editar: %v", err)
+	}
+
+	if chave != "chave" {
+		t.Errorf("a chave de serviço não foi enviada no PUT: %q", chave)
+	}
+	if recebido.Arquivo != "a.mp3" || recebido.EditadoPor != "aguergolet@gmail.com" {
+		t.Errorf("corpo errado: %+v", recebido)
+	}
+
+	// Sem invalidar, a correção só apareceria daqui a uma hora.
+	c.Lookup(context.Background(), []string{"a.mp3"})
+	if lookups != 2 {
+		t.Errorf("editar tem de invalidar o cache do arquivo; lookups=%d", lookups)
+	}
+}
+
+func TestEditarPropagaErroDoSite(t *testing.T) {
+	// Diferente de Lookup, Editar devolve erro: o usuário clicou em salvar e
+	// precisa saber que não salvou.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+	}))
+	defer srv.Close()
+
+	c := New(srv.URL, "chave", time.Hour)
+	if err := c.Editar(context.Background(), "a.mp3", "a@b.com", Edicao{}); err == nil {
+		t.Error("404 do site tem de virar erro, não silêncio")
+	}
+}
+
+func TestEditarDesligadoSemConfiguracao(t *testing.T) {
+	c := New("", "", time.Hour)
+	if err := c.Editar(context.Background(), "a.mp3", "a@b.com", Edicao{}); err == nil {
+		t.Error("sem catálogo configurado, editar tem de falhar explicitamente")
+	}
+}

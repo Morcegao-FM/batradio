@@ -250,3 +250,26 @@ implementação — o desenho do compose depende das respostas:
 - Aposentar o cliente Windows.
 - Papéis ou multiusuário além da allowlist de dois e-mails.
 - Ambiente de homologação do BatRadio.
+
+---
+
+## Adendo, 2026-09-14: escrita no catálogo
+
+A decisão original — "somente leitura, o BatRadio não escreve no banco do
+website" — **foi revertida a pedido**, para o painel poder corrigir a faixa que
+está no ar sem trocar de aba.
+
+O que mudou:
+
+- `PUT /api/servico/musicas/por-arquivo` no website, mesmo esquema `Servico`.
+  Reusa `AdminMusicaService`, então validação, limites e a trava de
+  enriquecimento são idênticos aos da Batcaverna.
+- Chaveado por arquivo, não por id: o gateway conhece o caminho no MPD.
+- **Continua não criando linha.** Faixa sem catálogo → 404. A invariante que
+  protegia o catálogo de receber o acervo inteiro do MPD segue de pé.
+- Coluna nova `musica_catalogo.editado_por` (aditiva, nula). `editadoPor` é
+  obrigatório no request e vem sempre da sessão do gateway, nunca do corpo.
+
+O custo aceito: a chave de serviço deixou de ser só-leitura. Quem a vazar agora
+altera o catálogo que o site exibe. A mitigação é a auditoria — toda alteração
+tem autor — e o fato de a chave viver só em dois `.env` no mesmo host.

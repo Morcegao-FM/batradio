@@ -4,6 +4,7 @@ import { post } from '../lib/api'
 import type { Status } from '../lib/types'
 import { useServerInfo, useStatus } from '../hooks/useStatus'
 import logo from '../assets/logo.png'
+import EditTrackModal from './EditTrackModal'
 import styles from './PlayerBar.module.css'
 
 function Equalizer({ playing }: { playing: boolean }) {
@@ -82,6 +83,8 @@ export default function PlayerBar() {
     onSuccess: (st) => queryClient.setQueryData(['status'], st),
   })
 
+  const [editando, setEditando] = useState(false)
+
   const playing = status?.state === 'play'
   const current = status?.current
 
@@ -107,12 +110,26 @@ export default function PlayerBar() {
           ) : null}
         </span>
       </div>
+      {current ? (
+        <button
+          type="button"
+          className={styles.editButton}
+          onClick={() => setEditando(true)}
+          title="Corrigir dados desta faixa no catálogo"
+          aria-label="Corrigir dados desta faixa"
+        >
+          Corrigir
+        </button>
+      ) : null}
       <div className={styles.right}>
         <span className={`${styles.liveBadge} ${info?.nodeOk ? '' : styles.liveOff}`}>
           ● AO VIVO
         </span>
         {info?.streamUrl ? <StreamMonitor url={info.streamUrl} /> : null}
       </div>
+      {editando && current ? (
+        <EditTrackModal song={current} onClose={() => setEditando(false)} />
+      ) : null}
     </footer>
   )
 }

@@ -61,3 +61,10 @@ export function post<T>(path: string, body?: unknown): Promise<T> {
     body: body === undefined ? '{}' : JSON.stringify(body),
   })
 }
+
+export function put<T>(path: string, body?: unknown): Promise<T> {
+  return api<T>(path, {
+    method: 'PUT',
+    body: body === undefined ? '{}' : JSON.stringify(body),
+  })
+}

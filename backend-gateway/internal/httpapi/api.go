@@ -92,6 +92,7 @@ func (s *Server) Routes(o *auth.OAuth) chi.Router {
 		api.Get("/library", s.handleLibrary)
 		api.Post("/library/refresh", s.handleLibraryRefresh)
 		api.Get("/server/info", s.handleServerInfo)
+		api.Put("/musicas", s.handleEditarMusica)
 
 		api.Get("/playlist", s.handleGetPlaylist)
 		api.Get("/playlist/current", s.handlePlaylistCurrent)
